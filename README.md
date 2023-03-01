@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to Personalized Learning 👋</h1>
+<h1 align="center">Welcome to Personalized Learning :wave:</h1>
 
 > Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
   
@@ -75,4 +75,4 @@ feat(moodleRequest): add json support
  
 ## Author
 
-👤 **[Max Kiefer](https://github.com/Maxkie1)**
+:bust_in_silhouette: **[Max Kiefer](https://github.com/Maxkie1)**
