@@ -30,49 +30,6 @@ conda activate <thisproject>
 pip install -r requirements.txt
 ```
 
-# Commit Messages
-
-Each commit message must conform to the [Commit Message Structure](#commit-structure) format.
-
-### <a name="commit-structure"></a>Commit Message Structure
-```
-<type>(<scope>): <subject>
-  │       │             │
-  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
-  │       │
-  │       └─⫸ Component or service affected by the committed change.
-  │
-  └─⫸ build|chore|ci|docs|feat|fix|perf|refactor
-```
-The `<type>` and `<subject>` fields are mandatory, the `(<scope>)` field is optional.
-
-#### Type
-Must be one of the following:
-
-* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
-* **chore**: Updating grunt tasks etc; no production code change 
-* **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
-* **docs**: Documentation only changes
-* **feat**: A new feature
-* **fix**: A bug fix
-* **perf**: A code change that improves performance
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-
-#### Scope
-The scope should be the name of component or service affected by the committed change.
-
-#### Subject
-The subject contains a succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize the first letter
-* no dot (.) at the end
-
-#### Example
-```
-feat(moodleRequest): add json support
-```
- 
 # Author
 
 :bust_in_silhouette: **[Max Kiefer](https://github.com/Maxkie1)**
