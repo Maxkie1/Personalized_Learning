@@ -1,10 +1,17 @@
-"""This module contains the main function of the application.
+"""This module contains the main function of the personalized learning application.
 
-This application retrieves activity logs from Moodle.
-Based on the activity logs the Felder-Silverman learning style of the student is predicted.
+It retrieves student activity logs from Moodle, aggregates them and predicts the learning style of a student.
+The learning style is then used to assign the student to a learning style group in Moodle.
+Each learning style group has access to a different set of course activities.
 The prediction is done by a machine learning model that is trained on synthetic data.
-Finally, the student is assigned to a learning style group in Moodle.
-Each learning style group has access to a different set of learning activities.
+The Felder-Silverman learning style model is the theoretical foundation of the application.
+
+The application can be run from the command line with the following arguments:
+
+    --train: train the model on synthetic data
+    --aggregate: retrieve activity logs from moodle
+    --predict: predict learning style of a student (requires --aggregate)
+    --assign: assign student to learning style group in moodle (requires --aggregate and --predict)
 
 Typical usage example:
 
@@ -52,9 +59,10 @@ def main(args):
         student = student.drop(["student_id"], axis=1)
         ls_id = ml.predict(student, loaded_model)
         print(
-            'Predicted learning style "{}" for student with ID {}.'.format(
-                learning_styles[ls_id], user_id
-            )
+            "Student ID:",
+            user_id,
+            "| Predicted Learning Style:",
+            learning_styles[ls_id],
         )
 
     if args.assign:
@@ -77,7 +85,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--predict",
-        help="predict learning style for a student",
+        help="predict learning style of a student",
         action="store_true",
     )
     parser.add_argument(

@@ -194,94 +194,46 @@ def extract_user_activity_logs(soups):
         for row in rows[1:]:  # skip the first row (table header)
             # find all table cells
             cells = row.find_all("td")
-
-            # filter the activity logs by the "Course module viewed" event
+            # check if the event is relevant
             if cells[5].text == "Course module viewed":
-                if (
-                    "URL" in cells[3].text
-                    or "File" in cells[3].text
-                    or "Folder" in cells[3].text
-                ) and "Video" in cells[3].text:
-                    activity = fill_activity_log(
-                        cells[0].text,
-                        cells[1].text,
-                        cells[3].text,
-                        "Video",
-                        cells[5].text,
-                        cells[6].text,
-                    )
-                elif (
-                    "URL" in cells[3].text
-                    or "File" in cells[3].text
-                    or "Folder" in cells[3].text
-                ) and "Image" in cells[3].text:
-                    activity = fill_activity_log(
-                        cells[0].text,
-                        cells[1].text,
-                        cells[3].text,
-                        "Image",
-                        cells[5].text,
-                        cells[6].text,
-                    )
-                elif "Forum" in cells[3].text and "FAQ" in cells[3].text:
-                    activity = fill_activity_log(
-                        cells[0].text,
-                        cells[1].text,
-                        cells[3].text,
-                        "FAQ",
-                        cells[5].text,
-                        cells[6].text,
-                    )
-                elif "Page" in cells[3].text and "Example" in cells[3].text:
-                    activity = fill_activity_log(
-                        cells[0].text,
-                        cells[1].text,
-                        cells[3].text,
-                        "Example",
-                        cells[5].text,
-                        cells[6].text,
-                    )
-                else:
-                    activity = fill_activity_log(
-                        cells[0].text,
-                        cells[1].text,
-                        cells[3].text,
-                        cells[4].text,
-                        cells[5].text,
-                        cells[6].text,
-                    )
-
+                activity = create_activity_log(cells)
                 activity_logs.append(activity)
 
     return activity_logs
 
 
-def fill_activity_log(
-    time, user_full_name, event_context, component, event_name, description
-):
-    """Fill the activity data into a activity dictionary.
+def create_activity_log(cells):
+    """Create an activity log from a table row of the user logs page.
 
     Args:
-        time: The time of the activity.
-        user_full_name: The full name of the user who performed the activity.
-        event_context: The event context of the activity.
-        component: The component of the activity.
-        event_name: The event name of the activity.
-        description: The description of the activity.
+        cells: The table cells of the table row.
 
     Returns:
         A dictionary containing the activity data.
     """
 
-    # create a new activity
     activity = {
-        "time": time,
-        "user full name": user_full_name,
-        "event context": event_context,
-        "component": component,
-        "event name": event_name,
-        "description": description,
+        "time": cells[0].text,
+        "user full name": cells[1].text,
+        "event context": cells[3].text,
+        "component": cells[4].text,
+        "event name": cells[5].text,
+        "description": cells[6].text,
     }
+
+    if (
+        "URL" in cells[3].text or "File" in cells[3].text or "Folder" in cells[3].text
+    ) and "Video" in cells[3].text:
+        # add new value to component key
+        activity["component"] = "Video"
+    elif (
+        "URL" in cells[3].text or "File" in cells[3].text or "Folder" in cells[3].text
+    ) and "Image" in cells[3].text:
+        activity["component"] = "Image"
+    elif "Forum" in cells[3].text and "FAQ" in cells[3].text:
+        activity["component"] = "FAQ"
+    elif "Page" in cells[3].text and "Example" in cells[3].text:
+        activity["component"] = "Example"
 
     return activity
 
