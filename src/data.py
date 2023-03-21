@@ -21,7 +21,7 @@ def create_synthetic_data(sample_size):
         - global: URL, Video, Forum,  Example
 
     Args:
-        sample_size: Number of rows in the synthetic dataset.
+        sample_size: Number of students in the synthetic dataset.
 
     Returns:
         The synthetic dataset as a dataframe.
@@ -188,7 +188,7 @@ def transform_data(data):
 def split_data(x_data, y_data, train_size):
     """Split data.
 
-    Split incoming data into train, validation and test sets.
+    Split incoming data into train and test sets.
 
     Args:
         x_data: The feature dataframe.

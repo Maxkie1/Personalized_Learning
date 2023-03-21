@@ -75,14 +75,12 @@ def session_login():
         The Moodle session used for further requests.
     """
 
-    # login credentials
     login_url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/login/index.php"
     login_data = {
         "username": MOODLE_USERNAME,
         "password": MOODLE_PASSWORD,
     }
 
-    # send a GET request to the login page to extract the login token
     session = requests.Session()
     response = session.get(login_url)
     soup = BeautifulSoup(response.content, "html.parser")
@@ -91,10 +89,9 @@ def session_login():
     # add the login token to the login data dictionary
     login_data["logintoken"] = login_token
 
-    # send a POST request to the login page with the login credentials
+    # send a POST request to the login page with the complete login data
     response = session.post(login_url, data=login_data)
 
-    # check if the login was successful (status code 200)
     if response.status_code == 200:
         return session
     else:
@@ -136,7 +133,6 @@ def moodle_access_user_logs(user_id, course_id, session):
         A list oof user logs pages as BeautifulSoup objects.
     """
 
-    # create a GET request to the user logs page with the session
     url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/report/log/user.php"
     params = {
         "id": user_id,
@@ -147,7 +143,6 @@ def moodle_access_user_logs(user_id, course_id, session):
     }
     response = session.get(url, params=params)
 
-    # check if the response was successful (status code 200)
     if response.status_code == 200:
         # parse the response with BeautifulSoup
         first_visit = BeautifulSoup(response.content, "html.parser")
@@ -224,7 +219,6 @@ def create_activity_log(cells):
     if (
         "URL" in cells[3].text or "File" in cells[3].text or "Folder" in cells[3].text
     ) and "Video" in cells[3].text:
-        # add new value to component key
         activity["component"] = "Video"
     elif (
         "URL" in cells[3].text or "File" in cells[3].text or "Folder" in cells[3].text
