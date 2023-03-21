@@ -43,7 +43,7 @@ def main(args):
     if args.train:
         synthetic_dataset = data.create_synthetic_data(20000)
         x_data, y_data = data.transform_data(synthetic_dataset)
-        x_train, y_train, x_test, y_test = data.split_data(x_data, y_data, 0.9)
+        x_train, y_train, x_test, y_test = data.split_data(x_data, y_data, 0.1)
         model = ml.train_model(x_train, y_train, 300)
         ml.evaluate_model(x_test, y_test, model)
         ml.save_model(model, path)
@@ -70,7 +70,11 @@ def main(args):
 
 
 def parse_arguments():
-    """Parse command line arguments."""
+    """Parse command line arguments.
+    
+    Returns:
+        The parsed arguments.
+    """
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

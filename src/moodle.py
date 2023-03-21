@@ -392,7 +392,7 @@ def is_user_in_group(user_id):
 
 
 def learning_style_assignment(predicted_ls, user_id):
-    """Assign a user to a new learning style group.
+    """Assign a user to a learning style group in Moodle.
 
     Args:
         predicted_ls: The predicted learning style of the user.

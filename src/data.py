@@ -185,7 +185,7 @@ def transform_data(data):
     return x_data, y_data
 
 
-def split_data(x_data, y_data, train_size):
+def split_data(x_data, y_data, test_size):
     """Split data.
 
     Split incoming data into train and test sets.
@@ -193,7 +193,7 @@ def split_data(x_data, y_data, train_size):
     Args:
         x_data: The feature dataframe.
         y_data: The label dataframe.
-        train: The size of the train set.
+        test_size: The size of the test set.
 
     Returns:
         The train test sets split into respective feature and label dataframes.
@@ -202,7 +202,7 @@ def split_data(x_data, y_data, train_size):
     x_train, x_test, y_train, y_test = train_test_split(
         x_data,
         y_data,
-        test_size=(1 - train_size),
+        test_size=test_size,
         random_state=42,
         shuffle=True,
         stratify=y_data,
