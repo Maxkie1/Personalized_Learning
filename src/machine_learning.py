@@ -53,7 +53,7 @@ def train_model(x_train, y_train, num_epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        if epoch % 50 == 0:
+        if epoch % 10 == 0 or epoch == num_epochs - 1:
             correct = 0
             for i in range(len(y_pred)):
                 if torch.argmax(y_pred[i]) == y_train[i]:
