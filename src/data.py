@@ -3,13 +3,15 @@
 import pandas as pd
 import numpy as np
 from sdv.lite import TabularPreset
+from sdv.tabular import CTGAN, GaussianCopula, TVAE, CopulaGAN
 from sklearn.model_selection import train_test_split
+import torch
 
 
 def create_synthetic_dataset(sample_size):
     """Create synthetic dataset.
 
-    Create a synthetic dataset with SDV using the FAST_ML preset.
+    Create a synthetic dataset with SDV using the VTAE model.
     The following list shows which activities are associated with which learning style:
         - sensing: Quiz, Glossary, Assignment, Example
         - intuitive: Forum, URL, Book, Page
@@ -49,8 +51,6 @@ def create_synthetic_dataset(sample_size):
         "global": ["URL", "Video", "Forum", "Example"],
     }
 
-    np.random.seed(42)
-
     dataset_size = 1000
 
     dataset = pd.DataFrame()
@@ -77,7 +77,9 @@ def create_synthetic_dataset(sample_size):
         for activity in activity_mappping[learning_style]:
             dataset.loc[
                 dataset["label"] == learning_style, activity
-            ] = np.random.randint(40, 50)
+            ] = np.random.randint(
+                30, 50, dataset["label"].value_counts()[learning_style]
+            )
 
     metadata = {
         "fields": {
@@ -104,9 +106,13 @@ def create_synthetic_dataset(sample_size):
         "primary_key": "student_id",
     }
 
-    model = TabularPreset(name="FAST_ML", metadata=metadata)
+    # model = TabularPreset(name="FAST_ML", metadata=metadata)
+    # model = CTGAN(table_metadata=metadata, verbose=True)
+    # model = GaussianCopula(table_metadata=metadata)
+    # model = CopulaGAN(table_metadata=metadata, verbose=True)
+    model = TVAE(table_metadata=metadata)
     model.fit(dataset)
-    synthetic_dataset = model.sample(num_rows=sample_size, randomize_samples=False)
+    synthetic_dataset = model.sample(num_rows=sample_size)
 
     return synthetic_dataset
 

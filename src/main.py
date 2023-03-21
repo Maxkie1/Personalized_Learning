@@ -71,7 +71,7 @@ def main(args):
 
 def parse_arguments():
     """Parse command line arguments.
-    
+
     Returns:
         The parsed arguments.
     """
