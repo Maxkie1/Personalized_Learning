@@ -47,13 +47,13 @@ def train_model(x_train, y_train, num_epochs):
     x_train = torch.tensor(x_train.values, dtype=torch.float32)
     y_train = torch.tensor(y_train.values, dtype=torch.long)
 
-    for epoch in range(num_epochs):
+    for epoch in range(num_epochs+1):
         y_pred = model(x_train)
         loss = loss_fn(y_pred, y_train)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        if epoch % 10 == 0 or epoch == num_epochs - 1:
+        if epoch % 10 == 0:
             correct = 0
             for i in range(len(y_pred)):
                 if torch.argmax(y_pred[i]) == y_train[i]:
