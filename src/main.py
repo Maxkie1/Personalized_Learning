@@ -8,7 +8,7 @@ The Felder-Silverman learning style model is the theoretical foundation of the a
 
 The application can be run from the command line with the following arguments:
 
-    --train: train the model on synthetic data
+    --train: train the model on a synthetic dataset
     --aggregate: retrieve activity logs from moodle
     --predict: predict learning style of a student (requires --aggregate)
     --assign: assign student to learning style group in moodle (requires --aggregate and --predict)
@@ -41,7 +41,7 @@ def main(args):
     }
 
     if args.train:
-        synthetic_dataset = data.create_synthetic_data(20000)
+        synthetic_dataset = data.create_synthetic_dataset(10000)
         x_data, y_data = data.transform_data(synthetic_dataset)
         x_train, y_train, x_test, y_test = data.split_data(x_data, y_data, 0.1)
         model = ml.train_model(x_train, y_train, 300)

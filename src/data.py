@@ -6,7 +6,7 @@ from sdv.lite import TabularPreset
 from sklearn.model_selection import train_test_split
 
 
-def create_synthetic_data(sample_size):
+def create_synthetic_dataset(sample_size):
     """Create synthetic dataset.
 
     Create a synthetic dataset with SDV using the FAST_ML preset.
@@ -21,7 +21,7 @@ def create_synthetic_data(sample_size):
         - global: URL, Video, Forum,  Example
 
     Args:
-        sample_size: Number of students in the synthetic dataset.
+        sample_size: Number of entries in the synthetic dataset.
 
     Returns:
         The synthetic dataset as a dataframe.
@@ -106,7 +106,7 @@ def create_synthetic_data(sample_size):
 
     model = TabularPreset(name="FAST_ML", metadata=metadata)
     model.fit(dataset)
-    synthetic_dataset = model.sample(num_rows=sample_size)
+    synthetic_dataset = model.sample(num_rows=sample_size, randomize_samples=False)
 
     return synthetic_dataset
 
