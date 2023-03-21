@@ -156,8 +156,7 @@ def activity_logs_to_dataframe(activity_logs):
 def transform_data(data):
     """Transform data.
 
-    Transform incomiong data into a format that can be used for training.
-    x_data contains the features and y_data contains the labels.
+    Transform incoming data into separate feature and label dataframes that can be used for training.
 
     Args:
         data: Raw dataframe.
