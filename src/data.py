@@ -132,7 +132,10 @@ def activity_logs_to_dataframe(activity_logs):
     """
 
     df = pd.DataFrame()
-    df["student_id"] = np.arange(10)
+    df["student_id"] = 0
+    for log in activity_logs:
+        if int((log["description"].split(" ")[4])[1:-1]) not in df["student_id"].values:
+            df = df.append({"student_id": int((log["description"].split(" ")[4])[1:-1])}, ignore_index=True)
     df["Book"] = 0
     df["Forum"] = 0
     df["FAQ"] = 0

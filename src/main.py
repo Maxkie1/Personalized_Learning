@@ -28,7 +28,6 @@ def main(args):
     """Main function."""
 
     course_id = 4
-    user_id = 8
     path = "../models/model.pt"
     learning_styles = {
         1: "sensing",
@@ -51,24 +50,25 @@ def main(args):
     if args.aggregate:
         activity_logs = moodle.aggregate_user_activity_logs(course_id)
         df = data.activity_logs_to_dataframe(activity_logs)
+        print("Aggregated data:\n {}".format(df))
 
     if args.predict:
         loaded_model = ml.load_model(path)
-        student = df.loc[df["student_id"] == user_id]
-        print("Student data:\n {}".format(student))
-        student = student.drop(["student_id"], axis=1)
-        ls_id = ml.predict(student, loaded_model)
-        print(
-            "Student ID:",
-            user_id,
-            "| Predicted Learning Style:",
-            learning_styles[ls_id],
-        )
-
-    if args.assign:
-        moodle.learning_style_assignment(ls_id, user_id)
-
-
+        users = moodle.get_enrolled_users(course_id)
+        for user in users:
+            student = df.loc[df["student_id"] == user["id"]]
+            print("Student data:\n {}".format(student))
+            student = student.drop(["student_id"], axis=1)
+            ls_id = ml.predict(student, loaded_model)
+            print(
+                "Student ID:",
+                user["id"],
+                "| Predicted Learning Style:",
+                learning_styles[ls_id],
+            )
+            if args.assign:
+                moodle.learning_style_assignment(ls_id, user["id"])
+        
 def parse_arguments():
     """Parse command line arguments.
 

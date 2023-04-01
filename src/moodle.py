@@ -179,9 +179,11 @@ def extract_user_activity_logs(soups):
     activity_logs = []
 
     for soup in soups:
-        # find the table with the activity logs
+        # find the table containing the activity logs
         table = soup.find("table", {"class": "generaltable"})
-
+        if not table:
+            continue
+        
         # find all table rows
         rows = table.find_all("tr")
 
@@ -270,6 +272,9 @@ def aggregate_user_activity_logs(course_id):
 
     # get all enrolled users within a course
     enrolled_users = get_enrolled_users(course_id)
+    print(f"Enrolled users of course ID {course_id}:")
+    for user in enrolled_users:
+        print(f"    ID {user['id']}: {user['fullname']}")
 
     # get the user activity logs of all enrolled users within a course
     activity_logs = []
