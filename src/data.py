@@ -2,10 +2,8 @@
 
 import pandas as pd
 import numpy as np
-from sdv.lite import TabularPreset
-from sdv.tabular import CTGAN, GaussianCopula, TVAE, CopulaGAN
+from sdv.tabular import TVAE
 from sklearn.model_selection import train_test_split
-import torch
 
 
 def create_synthetic_dataset(sample_size):
@@ -122,7 +120,7 @@ def activity_logs_to_dataframe(activity_logs):
 
     This functions counts how often a student has interacted with a specific type of activity by using the activity logs.
     The result is a dataframe with a row per student and a column per activity type.
-    Following activity types are considered: Book, Forum, Quiz, Glossary, Video, Picture, FAQ, Page, Assignment, Chat, Workshop, Folder, Lesson.
+    Following activity types are considered: Book, Forum, FAQ, Quiz, Glossary, URL, File, Video, Image, Chat, Workshop, Page, Assignment, Folder, Lesson, Example.
 
     Args:
         activity_logs: Activity logs as a list of dictionaries.
@@ -135,7 +133,10 @@ def activity_logs_to_dataframe(activity_logs):
     df["student_id"] = 0
     for log in activity_logs:
         if int((log["description"].split(" ")[4])[1:-1]) not in df["student_id"].values:
-            df = df.append({"student_id": int((log["description"].split(" ")[4])[1:-1])}, ignore_index=True)
+            df = df.append(
+                {"student_id": int((log["description"].split(" ")[4])[1:-1])},
+                ignore_index=True,
+            )
     df["Book"] = 0
     df["Forum"] = 0
     df["FAQ"] = 0
@@ -159,7 +160,29 @@ def activity_logs_to_dataframe(activity_logs):
             log["component"],
         ] += 1
 
+    df.set_index("student_id", inplace=True)
+
     return df
+
+
+def df_row_to_new_df(df, index, index_name):
+    """Convert dataframe row to new dataframe.
+
+    This function converts a row of a dataframe to a new dataframe.
+
+    Args:
+        df: The dataframe to be accessed.
+        index: The index of the row to be converted.
+        index_name: The name of the index.
+
+    Returns:
+        The row as a new dataframe.
+    """
+
+    new_df = df.loc[index].to_frame().T
+    new_df.index.name = index_name
+
+    return new_df
 
 
 def transform_data(data):

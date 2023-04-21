@@ -34,7 +34,10 @@ def get_enrolled_users(course_id):
 
     if response.status_code == 200:
         data = response.json()
-        return data
+        if "exception" not in data:
+            return data
+        else:
+            raise Exception("Course with ID {} does not exist.".format(course_id))
     else:
         raise Exception("Error while retrieving enrolled users.")
 
@@ -63,9 +66,82 @@ def get_user_activities_completion(user_id, course_id):
 
     if response.status_code == 200:
         data = response.json()
-        return data
+        if "exception" not in data:
+            return data
+        else:
+            raise Exception("Course with ID {} does not exist.".format(course_id))
     else:
         raise Exception("Error while retrieving user activities completion status.")
+
+
+def get_user_course_completion(course_id, user_id):
+    """Get user course completion status for a specific user.
+
+    Args:
+        course_id: The ID of the course for which the course completion status should be retrieved.
+        user_id: The ID of the user whose course completion status should be retrieved.
+
+    Returns:
+        A list of course completion status.
+    """
+
+    url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/webservice/rest/server.php"
+    params = {
+        "wstoken": PERSONALIZED_LEARNING_TOKEN,
+        "wsfunction": "core_completion_get_course_completion_status",
+        "courseid": course_id,
+        "userid": user_id,
+        "moodlewsrestformat": "json",
+    }
+
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        if "exception" not in data:
+            return data
+        else:
+            raise Exception(
+                "Course with ID {} does not exist or no completion criteria available.".format(
+                    course_id
+                )
+            )
+    else:
+        raise Exception("Error while retrieving user course completion status.")
+
+
+def mark_course_completed(course_id):
+    """Mark course as completed for a specific user.
+
+    Args:
+        course_id: The ID of the course which should be marked as completed.
+
+    Returns:
+        Success message.
+    """
+
+    url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/webservice/rest/server.php"
+    params = {
+        "wstoken": PERSONALIZED_LEARNING_TOKEN,
+        "wsfunction": "core_completion_mark_course_self_completed",
+        "courseid": course_id,
+        "moodlewsrestformat": "json",
+    }
+
+    response = requests.post(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        if "exception" not in data:
+            return data
+        else:
+            raise Exception(
+                "Course with ID {} does not exist, no completion criteria available or user already completed the course.".format(
+                    course_id
+                )
+            )
+    else:
+        raise Exception("Error while marking course as completed.")
 
 
 def session_login():
@@ -183,7 +259,7 @@ def extract_user_activity_logs(soups):
         table = soup.find("table", {"class": "generaltable"})
         if not table:
             continue
-        
+
         # find all table rows
         rows = table.find_all("tr")
 
@@ -245,6 +321,12 @@ def get_user_activity_logs(user_id, course_id):
         A list of user activity logs.
     """
 
+    print(
+        "moodle.get_user_activity_logs: Aggregating activity logs of student ID {} in course ID {}...".format(
+            user_id, course_id
+        )
+    )
+
     # login to Moodle
     session = session_login()
 
@@ -272,7 +354,9 @@ def aggregate_user_activity_logs(course_id):
 
     # get all enrolled users within a course
     enrolled_users = get_enrolled_users(course_id)
-    print(f"Enrolled users of course ID {course_id}:")
+    print(
+        f"moodle.aggregate_user_activity_logs: Aggregating data of enrolled students of course ID {course_id}:"
+    )
     for user in enrolled_users:
         print(f"    ID {user['id']}: {user['fullname']}")
 
@@ -396,33 +480,46 @@ def is_user_in_group(user_id):
     return False, None
 
 
-def learning_style_assignment(predicted_ls, user_id):
-    """Assign a user to a learning style group in Moodle.
+def learning_style_assignment(predicted_ls, user_id, confidence):
+    """Assign a user to a learning style group in Moodle if the confidence is high enough.
+
+    Does nothing if the previous learning style is the same as the new learning style.
+    Overwrites the previous learning style if the new learning style is different.
+    Does the first assignment if the user is not in any group.
 
     Args:
         predicted_ls: The predicted learning style of the user.
         user_id: The ID of the user whose learning style is predicted.
+        confidence: The confidence of the prediction.
     """
+
+    if confidence < 0.5:
+        print(
+            "moodle.learning_style_assignment: The prediction confidence {} is too low to assign a learning style.".format(
+                confidence
+            )
+        )
+        return
 
     is_group_member, previous_ls = is_user_in_group(user_id)
 
     if is_group_member and previous_ls == predicted_ls:
         print(
-            "The user's previous learning style {} is the same as the new learning style {}.".format(
+            "moodle.learning_style_assignment: The user's previous learning style {} is the same as the new learning style {}.".format(
                 previous_ls, predicted_ls
             )
         )
         return
     elif is_group_member:
         print(
-            "The user's previous learning style {} is overwritten by learning style {}.".format(
+            "moodle.learning_style_assignment: The user's previous learning style {} is overwritten by learning style {}.".format(
                 previous_ls, predicted_ls
             )
         )
         delete_user_from_group(user_id, previous_ls)
     else:
         print(
-            "First learning style assignment for the user with learning style {}.".format(
+            "moodle.learning_style_assignment: First learning style assignment for the user with learning style {}.".format(
                 predicted_ls
             )
         )
