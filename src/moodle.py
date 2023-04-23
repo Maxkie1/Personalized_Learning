@@ -483,7 +483,7 @@ def assign_learning_style(predicted_ls: int, user_id: int, confidence: float) ->
 
     if confidence < 0.5:
         print(
-            "moodle.learning_style_assignment: The prediction confidence {} is too low to assign a learning style.".format(
+            "moodle.assign_learning_style: The prediction confidence {} is too low to assign a learning style.".format(
                 confidence
             )
         )
@@ -493,21 +493,21 @@ def assign_learning_style(predicted_ls: int, user_id: int, confidence: float) ->
 
     if is_group_member and previous_ls == predicted_ls:
         print(
-            "moodle.learning_style_assignment: The user's previous learning style {} is the same as the new learning style {}.".format(
+            "moodle.assign_learning_style: The user's previous learning style {} is the same as the new learning style {}.".format(
                 previous_ls, predicted_ls
             )
         )
         return
     elif is_group_member:
         print(
-            "moodle.learning_style_assignment: The user's previous learning style {} is overwritten by learning style {}.".format(
+            "moodle.assign_learning_style: The user's previous learning style {} is overwritten by learning style {}.".format(
                 previous_ls, predicted_ls
             )
         )
         delete_user_from_group(user_id, previous_ls)
     else:
         print(
-            "moodle.learning_style_assignment: First learning style assignment for the user with learning style {}.".format(
+            "moodle.assign_learning_style: First learning style assignment for the user with learning style {}.".format(
                 predicted_ls
             )
         )

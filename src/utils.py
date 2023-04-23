@@ -89,11 +89,11 @@ def predict_and_assign(course_id: int, assign: bool = False, user_id: int = None
 
 
 def poll(course_id: int):
-    """Poll Moodle for student's course completion status and trigger learning style prediction.
+    """Poll Moodle for student's course completion status and trigger learning style prediction pipeline.
 
     If the student meets the prediction criteria, an aggregation, prediction and assignment is triggered.
-    A poll is triggered every 60 minutes.
-    This function is the main element of the automated learning style prediction pipeline.
+    It polls Moodle every 60 minutes.
+    This function is the main element of the automated learning style prediction pipeline used in the containerized version of the application.
 
     Args:
         course_id: The course ID of the course to be polled.
@@ -183,7 +183,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--poll",
-        help="Periodically poll Modle for student's course completion status and trigger learning style prediction. Requires a course ID. This is the main element of the automated learning style prediction pipeline.",
+        help="Periodically poll Modle for student's course completion status and trigger learning style prediction pipeline. Requires a course ID.",
         action="store",
         type=int,
     )

@@ -8,6 +8,8 @@ The personalized learning project is abouting retrieving student activity logs f
 
 # Usage
 
+## Local
+
 The application can be run from the command line with the following arguments:
     
 ```
@@ -37,7 +39,19 @@ To mark a student's course as completed in Moodle, run the following command:
 python main.py --mark 4
 ```
 
+## Docker
 
+In the automated polling mode the application can be run in a Docker container. 
+
+To build the Docker image, run the following command:
+```
+docker build -t personalized_learning .
+```
+
+To run the Docker container, run the following command:
+```
+docker run personalized_learning
+```
 
 
 # Installation
