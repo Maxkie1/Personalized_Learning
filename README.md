@@ -68,7 +68,7 @@ docker run personalized_learning
 
 To run the application locally, you need to have Python 3.10 installed on your machine. To install Python 3.10, follow the instructions on the [Python website](https://www.python.org/downloads/).
 
-The following libraries are required to run the application:
+The following Python libraries are required to run the application:
 
 - `pandas`
 - `pangres`
