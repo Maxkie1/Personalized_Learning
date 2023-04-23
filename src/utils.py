@@ -23,7 +23,7 @@ def train():
     ml.save_model(model, MODEL_PATH)
 
 
-def aggregate(course_id, user_id=None):
+def aggregate(course_id: int, user_id: int = None):
     """Aggregate activity logs from Moodle and insert them into the database.
 
     Args:
@@ -46,7 +46,7 @@ def aggregate(course_id, user_id=None):
     aggregate_engine.dispose()
 
 
-def predict_and_assign(course_id, assign=False, user_id=None):
+def predict_and_assign(course_id: int, assign: bool = False, user_id: int = None):
     """Predict learning styles for students and assign them to learning style groups in Moodle.
 
     Prediction and assignment tasks are combined in one function to reduce redudancy.
@@ -88,11 +88,12 @@ def predict_and_assign(course_id, assign=False, user_id=None):
     predict_engine.dispose()
 
 
-def poll(course_id):
-    """Poll Moodle for student's course completion status.
+def poll(course_id: int):
+    """Poll Moodle for student's course completion status and trigger learning style prediction.
 
-    If the student has completed the course, an aggregation, prediction and assignment is triggered.
-    A poll is triggered every 5 minutes.
+    If the student meets the prediction criteria, an aggregation, prediction and assignment is triggered.
+    A poll is triggered every 60 minutes.
+    This function is the main element of the automated learning style prediction pipeline.
 
     Args:
         course_id: The course ID of the course to be polled.
@@ -110,7 +111,7 @@ def poll(course_id):
         time.sleep(60)
 
 
-def student_meets_prediction_criteria(course_id, user_id):
+def student_meets_prediction_criteria(course_id: int, user_id: int) -> bool:
     """Check if a student meets the prediction criteria.
 
     A learning style prediction is only triggered if the student completed the course.
@@ -140,7 +141,7 @@ def student_meets_prediction_criteria(course_id, user_id):
         return False
 
 
-def mark_completed(course_id):
+def mark_completed(course_id: int):
     """Mark a student's course completion status in Moodle.
 
     Args:
@@ -150,7 +151,7 @@ def mark_completed(course_id):
     moodle.mark_course_completed(course_id)
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments.
 
     Returns:
@@ -160,7 +161,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--train",
-        help="Train the model on a synthetic dataset.",
+        help="Train the machine learning model on a synthetic dataset.",
         action="store_true",
     )
     parser.add_argument(
@@ -177,18 +178,18 @@ def parse_arguments():
     )
     parser.add_argument(
         "--assign",
-        help="Assign student to learning style group in moodle. Requires --predict.",
+        help="Assign student to learning style group in Moodle. Requires --predict.",
         action="store_true",
     )
     parser.add_argument(
         "--poll",
-        help="Poll moodle for student's course completion status. Requires a course ID.",
+        help="Poll Modle for student's course completion status and trigger learning style prediction. Requires a course ID.",
         action="store",
         type=int,
     )
     parser.add_argument(
         "--mark",
-        help="Mark a student's course as completed in moodle. Requires a course ID.",
+        help="Mark a student's course as completed in Moodle. Requires a course ID.",
         action="store",
         type=int,
     )
@@ -196,7 +197,7 @@ def parse_arguments():
     args = parser.parse_args()
 
     if args.assign and not args.predict:
-        parser.error("Running --assign requires --predict.")
+        parser.error("Running --assign requires running --predict as well. Run --help for more information.")
     elif (
         not args.train
         and not args.aggregate
@@ -205,7 +206,7 @@ def parse_arguments():
         and not args.mark
     ):
         parser.error(
-            "At least one of --train, --aggregate, --predict, --poll or --mark must be set."
+            "At least one argument is required. Run --help for more information."
         )
 
     return args
