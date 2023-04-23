@@ -1,7 +1,7 @@
 """This module contains the main function of the personalized learning application.
 
-It retrieves student activity logs from Moodle, aggregates them and predicts the learning style of a student.
-The learning style is then used to assign the student to a learning style group in Moodle.
+It retrieves user activity logs from Moodle, aggregates them and predicts the learning style of a user.
+The learning style is then used to assign the user to a learning style group in Moodle.
 Each learning style group has access to a different set of course activities.
 The prediction is done by a machine learning model that is trained on synthetic data.
 The Felder-Silverman learning style model is the theoretical foundation of the application.
@@ -10,10 +10,10 @@ The application can be run from the command line with the following arguments:
 
     --train: Train the machine learning model on a synthetic dataset.
     --aggregate: Aggregate activity logs from Moodle. Requires a course ID.
-    --predict: Predict learning style of a student. Requires a course ID and at least one prior --aggregate run.
-    --assign: Assign student to learning style group in Moodle. Requires --predict.
-    --poll: Periodically poll Moodle for student's course completion status and trigger learning style prediction pipeline. Requires a course ID.
-    --mark: Mark a student's course as completed in Moodle. Requires a course ID.
+    --predict: Predict learning style of an user. Requires a course ID and at least one prior --aggregate run.
+    --assign: Assign user to learning style group in Moodle. Requires --predict.
+    --poll: Periodically poll Moodle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.
+    --mark: Mark an user's course as completed in Moodle. Requires a course ID.
 
 Typical usage example:
 
