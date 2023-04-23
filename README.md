@@ -4,7 +4,7 @@
   
 # Description
 
-The Personalized Learning project is about retrieving user activity logs from Moodle, aggregating them and predicting the learning style of an user. The learning style is then used to assign the user to a learning style group in Moodle. Each learning style group has access to a different set of course activities. The prediction is done by a machine learning model that is trained on synthetic data. The [Felder-Silverman learning style model](https://www.engr.ncsu.edu/wp-content/uploads/drive/1QP6kBI1iQmpQbTXL-08HSl0PwJ5BYnZW/1988-LS-plus-note.pdf) is the theoretical foundation of the application.
+The Personalized Learning project is about retrieving user activity logs from Moodle, aggregating them and predicting the learning style of an user. The learning style is then used to assign the user to a learning style group in Moodle. Each learning style group has access to a different set of course activities. The prediction is done by a machine learning model that is trained on synthetic data. For this project the [DHBW Stutgart Moodle 4.x Dev](http://ai-in-education.dhbw-stuttgart.de/moodle/login/?lang=en) instance is used. The [Felder-Silverman learning style model](https://www.engr.ncsu.edu/wp-content/uploads/drive/1QP6kBI1iQmpQbTXL-08HSl0PwJ5BYnZW/1988-LS-plus-note.pdf) is the theoretical foundation of the application.
 
 # Usage
 
