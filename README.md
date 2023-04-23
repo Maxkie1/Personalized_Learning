@@ -94,7 +94,7 @@ conda activate <thisproject>
 pip install -r requirements.txt
 ```
 
-Additionally place a `.env` file in the root directory of the project with the following content. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the content of the `.env` file.
+Additionally place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the content of the `.env` file.
 
 # Contributors
 
