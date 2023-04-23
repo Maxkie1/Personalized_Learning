@@ -91,10 +91,10 @@ def evaluate_model(x_test: pd.DataFrame, y_test: pd.DataFrame, model: NeuralNet)
 
 
 def predict(x: list, model: NeuralNet) -> tuple:
-    """Predict the learning style of a student.
+    """Predict the learning style of a user.
 
     Args:
-        x: The student data as array.
+        x: The user data as array.
         model: The trained model.
 
     Returns:
@@ -111,7 +111,7 @@ def predict(x: list, model: NeuralNet) -> tuple:
         7: "sequential",
     }
 
-    student_id = x[0]
+    user_id = x[0]
     x = x[1:]
 
     x = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
@@ -122,8 +122,8 @@ def predict(x: list, model: NeuralNet) -> tuple:
     confidence = round(y_pred[0][label.item()].item(), 2)
 
     print(
-        "ml.predict: Student ID: ",
-        student_id,
+        "ml.predict: User ID: ",
+        user_id,
         "| Learning Style: ",
         learning_styles[label.item() + 1],
         "| Confidence: ",

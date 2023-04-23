@@ -28,8 +28,8 @@ def initialize_activity_table(engine: Engine):
     """Initialize activity table in database.
 
     Create the activity table in the database if it does not exist yet.
-    The student ID is the primary key.
-    Each column represents how many times the student has interacted with a specific learning activity.
+    The user ID is the primary key.
+    Each column represents how many times the user has interacted with a specific learning activity.
     Following activity types are considered: Book, Forum, FAQ, Quiz, Glossary, URL, File, Video, Image, Chat, Workshop, Page, Assignment, Folder, Lesson, Example.
 
     Args:
@@ -43,11 +43,11 @@ def initialize_activity_table(engine: Engine):
         connection.commit()
 
 
-def insert_student_data(engine: Engine, df: pd.DataFrame):
+def insert_user_data(engine: Engine, df: pd.DataFrame):
     """Insert data into activity table.
 
     Insert a dataframe into the activity table.
-    This either updates an existing entry by overwriting it or creates a new entry if the student ID does not exist yet in the table.
+    This either updates an existing entry by overwriting it or creates a new entry if the user ID does not exist yet in the table.
 
     Args:
         engine: The engine object to the database.
@@ -56,18 +56,18 @@ def insert_student_data(engine: Engine, df: pd.DataFrame):
 
     upsert(engine, df, "student_activities", if_row_exists="update")
 
-    student_ids = ", ".join([str(student_id) for student_id in df.index.values])
+    user_ids = ", ".join([str(user_id) for user_id in df.index.values])
 
     if len(df.index.values) > 1:
         print(
-            "db.insert_student_data: Inserted data of student IDs {} into database.".format(
-                student_ids
+            "db.insert_user_data: Inserted data of user IDs {} into database.".format(
+                user_ids
             )
         )
     else:
         print(
-            "db.insert_student_data: Inserted data of student ID {} into database.".format(
-                student_ids
+            "db.insert_user_data: Inserted data of user ID {} into database.".format(
+                user_ids
             )
         )
 
@@ -98,35 +98,36 @@ def fetch_complete_data(engine: Engine) -> list[tuple]:
         raise e
 
 
-def fetch_student_data(engine: Engine, student_id: int) -> tuple:
-    """Fetch data of a specific student from activity table.
+def fetch_user_data(engine: Engine, user_id: int) -> tuple:
+    """Fetch data of a specific user from activity table.
 
     Args:
         engine: The engine object to the database.
-        student_id: The student ID of the student whose data should be fetched.
+        user_id: The user ID whose data is to be fetched.
 
     Returns:
-        A tuple containing the data of the student.
+        A tuple containing the data of the user.
     """
 
-    query = "SELECT * FROM student_activities WHERE student_id=:student_id"
+    query = "SELECT * FROM student_activities WHERE student_id=:user_id"
 
     try:
         with engine.connect() as connection:
-            result = connection.execute(text(query), {"student_id": int(student_id)})
+            result = connection.execute(text(query), {"user_id": int(user_id)})
             try:
                 rows = result.fetchall()
                 result = rows[0]
                 print(
-                    "db.fetch_student_data: Fetched data of student ID {}.".format(
-                        student_id
+                    "db.fetch_user_data: Fetched data of user ID {}.".format(
+                        user_id
                     )
                 )
                 return result
             except IndexError:
+                # print with function name
                 print(
-                    "db.fetch_student_data: Student ID {} does not exist.".format(
-                        student_id
+                    "db.fetch_user_data: User ID {} does not exist.".format(
+                        user_id
                     )
                 )
                 return None
@@ -134,39 +135,39 @@ def fetch_student_data(engine: Engine, student_id: int) -> tuple:
         raise e
 
 
-def update_student_data(engine: Engine, df: pd.DataFrame):
-    """Update a specific student's data in activity table.
+def update_user_data(engine: Engine, df: pd.DataFrame):
+    """Update a specific users's data in activity table.
 
     This function calculates the difference between the values of the dataframe and the values of the database and inserts the result into the database.
 
     Args:
         engine: The engine object to the database.
-        df: The dataframe containing the student data to be updated.
+        df: The dataframe containing the user data to be updated.
     """
 
-    for student_id in df.index.values:
-        print("db.update_student_data: Updating student ID {}...".format(student_id))
+    for user_id in df.index.values:
+        print("db.update_user_data: Updating user ID {}...".format(user_id))
 
-        db_data = fetch_student_data(engine, student_id)
+        db_data = fetch_user_data(engine, user_id)
         if db_data is None:
             print(
-                "db.update_student_data: Creating new entry for student ID {}...".format(
-                    student_id
+                "db.update_user_data: Creating new entry for user ID {}...".format(
+                    user_id
                 )
             )
-            student_data = data.df_row_to_new_df(df, student_id, "student_id")
-            insert_student_data(engine, student_data)
+            user_data = data.df_row_to_new_df(df, user_id, "student_id")
+            insert_user_data(engine, user_data)
             continue
 
         db_data = list(db_data)[1:]
-        df_data = list(df.loc[student_id].values)
+        df_data = list(df.loc[user_id].values)
         print("db_data", db_data)
         print("df_Data", df_data)
 
         if db_data == df_data:
             print(
-                "db.update_student_data: No update required for student ID {}.".format(
-                    student_id
+                "db.update_user_data: No update required for user ID {}.".format(
+                    user_id
                 )
             )
             continue
@@ -175,7 +176,7 @@ def update_student_data(engine: Engine, df: pd.DataFrame):
         print("diff", diff)
 
         df_new = pd.DataFrame()
-        df_new["student_id"] = [student_id]
+        df_new["student_id"] = [user_id]
         df_new["Book"] = [diff[0]]
         df_new["Forum"] = [diff[1]]
         df_new["FAQ"] = [diff[2]]
@@ -194,5 +195,5 @@ def update_student_data(engine: Engine, df: pd.DataFrame):
         df_new["Example"] = [diff[15]]
         df_new.set_index("student_id", inplace=True)
 
-        insert_student_data(engine, df_new)
-        print("db.update_student_data: Updated student ID {}.".format(student_id))
+        insert_user_data(engine, df_new)
+        print("db.update_user_data: Updated user ID {}.".format(user_id))

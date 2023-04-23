@@ -185,7 +185,7 @@ def access_user_logs(
 ) -> list[BeautifulSoup]:
     """Access the user logs pages of a course for a specific user.
 
-    The user logs pages contains the activity logs of a user within a course.
+    The user logs pages contains the activity logs of an user within a course.
     The pages are parsed with BeautifulSoup to extract the activity logs.
 
     Args:
@@ -320,7 +320,7 @@ def get_user_activity_logs(user_id: int, course_id: int) -> list[dict]:
     """
 
     print(
-        "moodle.get_user_activity_logs: Aggregating activity logs of student ID {} in course ID {}...".format(
+        "moodle.get_user_activity_logs: Aggregating activity logs of user ID {} in course ID {}...".format(
             user_id, course_id
         )
     )
@@ -353,7 +353,7 @@ def aggregate_user_activity_logs(course_id: int) -> list[dict]:
     # get all enrolled users within a course
     enrolled_users = get_enrolled_users(course_id)
     print(
-        f"moodle.aggregate_user_activity_logs: Aggregating data of enrolled students of course ID {course_id}:"
+        f"moodle.aggregate_user_activity_logs: Aggregating data of enrolled users of course ID {course_id}:"
     )
     for user in enrolled_users:
         print(f"    ID {user['id']}: {user['fullname']}")
@@ -367,10 +367,10 @@ def aggregate_user_activity_logs(course_id: int) -> list[dict]:
 
 
 def add_user_to_group(user_id: int, learning_style: int) -> None:
-    """Add a user to a learning style group.
+    """Add an user to a learning style group.
 
     Each group represents a learning style. The user is added to respective group of his/her learning style.
-    The student has access to learning style related activies and resources based on the group membership.
+    The user has access to learning style related activies and resources based on the group membership.
     The following groups are available:
         - 1: sensing
         - 2: intuitive
@@ -402,7 +402,7 @@ def add_user_to_group(user_id: int, learning_style: int) -> None:
 
 
 def delete_user_from_group(user_id: int, learning_style: int) -> None:
-    """Delete a user from a learning style group.
+    """Delete an user from a learning style group.
 
     Args:
         user_id: The ID of the user to be deleted from a group.
@@ -459,7 +459,7 @@ def get_group_members(group_ids: list[int]) -> list[dict]:
 
 
 def is_user_in_group(user_id: int) -> tuple[bool, int]:
-    """Check if a user is in any group.
+    """Check if an user is in any group.
 
     Args:
         user_id: The ID of the user to be checked.
@@ -479,7 +479,7 @@ def is_user_in_group(user_id: int) -> tuple[bool, int]:
 
 
 def assign_learning_style(predicted_ls: int, user_id: int, confidence: float) -> None:
-    """Assign a user to a learning style group in Moodle if the confidence is high enough.
+    """Assign anuser to a learning style group in Moodle if the confidence is high enough.
 
     Does nothing if the previous learning style is the same as the new learning style.
     Overwrites the previous learning style if the new learning style is different.

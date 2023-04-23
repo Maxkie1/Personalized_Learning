@@ -12,9 +12,8 @@ DATABASE_PATH = "database/database.db"
 
 
 def train():
-    """Train the machine learning model on a synthetic dataset if --train is set."""
+    """Train the machine learning model on a synthetic dataset and save it to disk."""
 
-    MODEL_PATH = "models/model.pt"
     synthetic_dataset = data.create_synthetic_dataset(10000)
     x_data, y_data = data.transform_data(synthetic_dataset)
     x_train, y_train, x_test, y_test = data.split_data(x_data, y_data, 0.1)
@@ -28,33 +27,33 @@ def aggregate(course_id: int, user_id: int = None):
 
     Args:
         course_id: The course ID of the course activity logs should be aggregated for.
-        user_id: Optional user ID of a student. If provided, only activity logs for the provided student are aggregated.
+        user_id: Optional user ID. If provided, only activity logs for the provided user are aggregated.
     """
 
     if user_id:
         # aggregate activity logs for provided user ID
         activity_logs = moodle.get_user_activity_logs(user_id, course_id)
     else:
-        # aggregate activity logs for all students in course
+        # aggregate activity logs for all users in course
         activity_logs = moodle.aggregate_user_activity_logs(course_id)
 
     df = data.activity_logs_to_dataframe(activity_logs)
 
     aggregate_engine = db.create_db_engine(DATABASE_PATH)
     db.initialize_activity_table(aggregate_engine)
-    db.update_student_data(aggregate_engine, df)
+    db.update_user_data(aggregate_engine, df)
     aggregate_engine.dispose()
 
 
 def predict_and_assign(course_id: int, assign: bool = False, user_id: int = None):
-    """Predict learning styles for students and assign them to learning style groups in Moodle.
+    """Predict learning styles for users and assign them to learning style groups in Moodle.
 
     Prediction and assignment tasks are combined in one function to reduce redudancy.
 
     Args:
-        course_id: The course ID of the course students to be predicted are enrolled in.
-        assign: Boolean value indicating whether the student should be assigned to a learning style group.
-        user_id: Optional user ID of a student. If provided, only the learning style for the provided student is predicted.
+        course_id: The course ID of the course users to be predicted are enrolled in.
+        assign: Boolean value indicating whether the user should be assigned to a learning style group.
+        user_id: Optional user ID. If provided, only the learning style for the provided user is predicted.
     """
 
     loaded_model = ml.load_model(MODEL_PATH)
@@ -63,35 +62,35 @@ def predict_and_assign(course_id: int, assign: bool = False, user_id: int = None
     if user_id:
         # predict learning style for provided user ID
         print(
-            "utils.predict_and_assign: Predicting learning style for student ID {}...".format(
+            "utils.predict_and_assign: Predicting learning style for user ID {}...".format(
                 user_id
             )
         )
-        student = db.fetch_student_data(predict_engine, user_id)
-        ls_id, confidence = ml.predict(student, loaded_model)
+        user = db.fetch_user_data(predict_engine, user_id)
+        ls_id, confidence = ml.predict(user, loaded_model)
         if assign:
             moodle.assign_learning_style(ls_id, user_id, confidence)
     else:
-        # predict learning style for all students in course
-        users = moodle.get_enrolled_users(course_id)
-        for user in users:
+        # predict learning style for all users in course
+        enrolled_users = moodle.get_enrolled_users(course_id)
+        for enrolled_user in enrolled_users:
             print(
-                "utils.predict_and_assign: Predicting learning style for student ID {}...".format(
-                    user["id"]
+                "utils.predict_and_assign: Predicting learning style for user ID {}...".format(
+                    enrolled_user["id"]
                 )
             )
-            student = db.fetch_student_data(predict_engine, user["id"])
-            ls_id, confidence = ml.predict(student, loaded_model)
+            user = db.fetch_user_data(predict_engine, enrolled_user["id"])
+            ls_id, confidence = ml.predict(user, loaded_model)
             if assign:
-                moodle.assign_learning_style(ls_id, user["id"], confidence)
+                moodle.assign_learning_style(ls_id, enrolled_user["id"], confidence)
 
     predict_engine.dispose()
 
 
 def poll(course_id: int):
-    """Poll Moodle for student's course completion status and trigger learning style prediction pipeline.
+    """Poll Moodle for user's course completion status and trigger learning style prediction pipeline.
 
-    If the student meets the prediction criteria, an aggregation, prediction and assignment is triggered.
+    If the user meets the prediction criteria, an aggregation, prediction and assignment is triggered.
     It polls Moodle every 60 minutes.
     This function is the main element of the automated learning style prediction pipeline used in the containerized version of the application.
 
@@ -105,36 +104,36 @@ def poll(course_id: int):
 
         users = moodle.get_enrolled_users(course_id)
         for user in users:
-            if student_meets_prediction_criteria(course_id, user["id"]):
+            if user_meets_prediction_criteria(course_id, user["id"]):
                 aggregate(course_id, user["id"])
                 predict_and_assign(course_id, True, user["id"])
         time.sleep(60)
 
 
-def student_meets_prediction_criteria(course_id: int, user_id: int) -> bool:
-    """Check if a student meets the prediction criteria.
+def user_meets_prediction_criteria(course_id: int, user_id: int) -> bool:
+    """Check if an user meets the prediction criteria.
 
-    A learning style prediction is only triggered if the student completed the course.
+    A learning style prediction is only triggered if the user completed the course.
 
     Args:
-        course_id: The course ID of the course the student is enrolled in.
-        user_id: The user ID of the student.
+        course_id: The course ID of the course the user is enrolled in.
+        user_id: The user ID.
 
     Returns:
-        Boolean value indicating whether the student meets the prediction criteria.
+        Boolean value indicating whether the user meets the prediction criteria.
     """
 
     course_completion = moodle.get_user_course_completion(user_id, course_id)
     if course_completion["completionstatus"]["completions"][0]["complete"]:
         print(
-            "utils.student_meets_prediction_criteria: Student ID {} has completed the course ID {}.".format(
+            "utils.user_meets_prediction_criteria: User ID {} has completed the course ID {}.".format(
                 user_id, course_id
             )
         )
         return True
     else:
         print(
-            "utils.student_meets_prediction_criteria: Student ID {} has not completed the course ID {} yet.".format(
+            "utils.user_meets_prediction_criteria: User ID {} has not completed the course ID {} yet.".format(
                 user_id, course_id
             )
         )
@@ -142,7 +141,7 @@ def student_meets_prediction_criteria(course_id: int, user_id: int) -> bool:
 
 
 def mark_completed(course_id: int):
-    """Mark a student's course completion status in Moodle.
+    """Mark an user's course completion status in Moodle.
 
     Args:
         course_id: The course ID of the course to be marked as completed.
@@ -172,24 +171,24 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--predict",
-        help="Predict learning style of a student. Requires a course ID and at least one prior --aggregate run.",
+        help="Predict learning style of an user. Requires a course ID and at least one prior --aggregate run.",
         action="store",
         type=int,
     )
     parser.add_argument(
         "--assign",
-        help="Assign student to learning style group in Moodle. Requires --predict.",
+        help="Assign user to learning style group in Moodle. Requires --predict.",
         action="store_true",
     )
     parser.add_argument(
         "--poll",
-        help="Periodically poll Modle for student's course completion status and trigger learning style prediction pipeline. Requires a course ID.",
+        help="Periodically poll Modle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.",
         action="store",
         type=int,
     )
     parser.add_argument(
         "--mark",
-        help="Mark a student's course as completed in Moodle. Requires a course ID.",
+        help="Mark a user's course as completed in Moodle. Requires a course ID.",
         action="store",
         type=int,
     )

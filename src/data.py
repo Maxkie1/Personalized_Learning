@@ -114,8 +114,8 @@ def create_synthetic_dataset(sample_size: int) -> pd.DataFrame:
 def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
     """Convert activity logs to dataframe.
 
-    This function counts how often a student has interacted with a specific type of activity by using the activity logs.
-    The result is a dataframe with a row per student and a column per activity type.
+    This function counts how often a user has interacted with a specific type of activity by using the activity logs.
+    The result is a dataframe with a row per user and a column per activity type.
     Following activity types are considered: Book, Forum, FAQ, Quiz, Glossary, URL, File, Video, Image, Chat, Workshop, Page, Assignment, Folder, Lesson, Example.
 
     Args:
@@ -144,19 +144,19 @@ def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
         "Example",
     ]
 
-    # initialize dataframe with student IDs as index and activity types as columns
-    student_ids = set(
+    # initialize dataframe with user IDs as index and activity types as columns
+    user_ids = set(
         [int(log["description"].split(" ")[4][1:-1]) for log in activity_logs]
     )
-    student_ids = sorted(list(student_ids))
-    df = pd.DataFrame(index=student_ids, columns=activity_types).fillna(0)
+    user_ids = sorted(list(user_ids))
+    df = pd.DataFrame(index=user_ids, columns=activity_types).fillna(0)
     df.index.name = "student_id"
 
-    # increment count for each student-activity combination in the logs
+    # increment count for each time a user has interacted with a specific activity type
     for log in activity_logs:
-        student_id = int(log["description"].split(" ")[4][1:-1])
+        user_id = int(log["description"].split(" ")[4][1:-1])
         activity_type = log["component"]
-        df.loc[student_id, activity_type] += 1
+        df.loc[user_id, activity_type] += 1
 
     return df
 
@@ -191,7 +191,6 @@ def transform_data(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     Returns:
         The transformed data split into a feature and label dataframe.
-
     """
 
     x_data = data.drop(["label", "student_id"], axis=1)
