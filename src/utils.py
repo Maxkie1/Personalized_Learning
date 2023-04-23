@@ -70,7 +70,7 @@ def predict_and_assign(course_id, assign=False, user_id=None):
         student = db.fetch_student_data(predict_engine, user_id)
         ls_id, confidence = ml.predict(student, loaded_model)
         if assign:
-            moodle.learning_style_assignment(ls_id, user_id, confidence)
+            moodle.assign_learning_style(ls_id, user_id, confidence)
     else:
         # predict learning style for all students in course
         users = moodle.get_enrolled_users(course_id)
@@ -83,7 +83,7 @@ def predict_and_assign(course_id, assign=False, user_id=None):
             student = db.fetch_student_data(predict_engine, user["id"])
             ls_id, confidence = ml.predict(student, loaded_model)
             if assign:
-                moodle.learning_style_assignment(ls_id, user["id"], confidence)
+                moodle.assign_learning_style(ls_id, user["id"], confidence)
 
     predict_engine.dispose()
 
@@ -99,27 +99,45 @@ def poll(course_id):
     """
 
     while True:
-        print("_____________________________________________________________")
+        print("_________________________________________________________________")
         print("utils.poll: Polling Moodle for course completion status...")
 
         users = moodle.get_enrolled_users(course_id)
         for user in users:
-            course_completion = moodle.get_user_course_completion(course_id, user["id"])
-            if course_completion["completionstatus"]["completions"][0]["complete"]:
-                print(
-                    "utils.poll: Student ID {} has completed the course ID {}.".format(
-                        user["id"], course_id
-                    )
-                )
+            if student_meets_prediction_criteria(course_id, user["id"]):
                 aggregate(course_id, user["id"])
                 predict_and_assign(course_id, True, user["id"])
-            else:
-                print(
-                    "utils.poll: Student ID {} has not completed the course ID {} yet.".format(
-                        user["id"], course_id
-                    )
-                )
         time.sleep(60)
+
+def student_meets_prediction_criteria(course_id, user_id):
+    """Check if a student meets the prediction criteria.
+
+    A learning style prediction is only triggered if the student completed the course.
+
+    Args:
+        course_id: The course ID of the course the student is enrolled in.
+        user_id: The user ID of the student.
+
+    Returns:
+        Boolean value indicating whether the student meets the prediction criteria.
+    """
+    
+    course_completion = moodle.get_user_course_completion(user_id, course_id)
+    if course_completion["completionstatus"]["completions"][0]["complete"]:
+        print(
+            "utils.student_meets_prediction_criteria: Student ID {} has completed the course ID {}.".format(
+                user_id, course_id
+            )
+        )
+        return True
+    else:
+        print(
+            "utils.student_meets_prediction_criteria: Student ID {} has not completed the course ID {} yet.".format(
+                user_id, course_id
+            )
+        )
+        return False
+
 
 
 def mark_completed(course_id):

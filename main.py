@@ -32,6 +32,7 @@ from src.utils import (
     mark_completed,
 )
 
+# TODO: add handling for polling and course completion status, maybe first flag
 
 def main(args):
     """Main function."""
@@ -45,11 +46,11 @@ def main(args):
     if args.predict:
         predict_and_assign(args.predict, args.assign)
 
-    if args.poll:
-        poll(args.poll)
-
     if args.mark:
         mark_completed(args.mark)
+
+    if args.poll:
+        poll(args.poll)
 
 
 if __name__ == "__main__":
