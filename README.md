@@ -96,6 +96,6 @@ pip install -r requirements.txt
 
 Additionally place a `.env` file in the root directory of the project with the following content. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the content of the `.env` file.
 
-# Author
+# Contributors
 
 :bust_in_silhouette: **[Max Kiefer](https://github.com/Maxkie1)**
