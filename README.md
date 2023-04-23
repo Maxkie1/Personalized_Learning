@@ -12,7 +12,7 @@ The application can be run in two modes: [Local](#local) and [Docker](#docker). 
 
 ## Local
 
-In the local mode the application can be run from the command line. For instructions on how to install the application locally, see the [Installation](#installation) section. 
+In the Local mode the application can be run from the command line. For instructions on how to install the application locally, see the [Installation](#installation) section. 
 
 The application can be run with the following arguments:   
 ```
