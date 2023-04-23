@@ -183,7 +183,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--poll",
-        help="Poll Modle for student's course completion status and trigger learning style prediction. Requires a course ID.",
+        help="Periodically poll Modle for student's course completion status and trigger learning style prediction. Requires a course ID. This is the main element of the automated learning style prediction pipeline.",
         action="store",
         type=int,
     )
@@ -197,7 +197,9 @@ def parse_arguments() -> argparse.Namespace:
     args = parser.parse_args()
 
     if args.assign and not args.predict:
-        parser.error("Running --assign requires running --predict as well. Run --help for more information.")
+        parser.error(
+            "Running --assign requires running --predict as well. Run --help for more information."
+        )
     elif (
         not args.train
         and not args.aggregate

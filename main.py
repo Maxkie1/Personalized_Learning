@@ -8,11 +8,11 @@ The Felder-Silverman learning style model is the theoretical foundation of the a
 
 The application can be run from the command line with the following arguments:
 
-    --train: Train the model on a synthetic dataset.
+    --train: Train the machine learning model on a synthetic dataset.
     --aggregate: Aggregate activity logs from moodle. Requires a course ID.
     --predict: Predict learning style of a student. Requires a course ID and at least one prior --aggregate run.
     --assign: Assign student to learning style group in moodle. Requires --predict.
-    --poll: Poll moodle for student's course completion status and automatically assign them to a learning style group. Requires a course ID.
+    --poll: Periodically poll Moodle for student's course completion status and trigger learning style prediction. Requires a course ID. This is the main element of the automated learning style prediction pipeline.
     --mark: Mark a student's course as completed in moodle. Requires a course ID.
 
 Typical usage example:
@@ -20,7 +20,6 @@ Typical usage example:
     python main.py --train --aggregate 4 --predict 4 --assign
     python main.py --poll 4
     python main.py --mark 4
-
 """
 
 from src.utils import (
