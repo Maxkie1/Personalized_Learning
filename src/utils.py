@@ -165,7 +165,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--aggregate",
-        help="Aggregate activity logs from moodle. Requires a course ID.",
+        help="Aggregate activity logs from Moodle. Requires a course ID.",
         action="store",
         type=int,
     )
