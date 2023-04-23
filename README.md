@@ -27,27 +27,27 @@ The application can be run with the following arguments:
 
 ### Examples
 
-Here are some examples of how to run the application from the command line.
+Here are some examples of how to run the application from the command line:
 
 * To train the machine learning model, run the following command:
     ```
     python main.py --train
     ```
 
-To aggregate activity logs from Moodle, predict learning style of a student and assign the student to a learning style group in Moodle, run the following command:
-``` 
-python main.py --aggregate 4 --predict 4 --assign
-```
+* To aggregate activity logs from Moodle, predict learning style of a student and assign the student to a learning style group in Moodle, run the following command:
+    ``` 
+    python main.py --aggregate 4 --predict 4 --assign
+    ```
 
-To periodically poll Moodle for student's course completion status and trigger learning style prediction, run the following command:
-```
-python main.py --poll 4
-```
+* To periodically poll Moodle for student's course completion status and trigger learning style prediction, run the following command:
+    ```
+    python main.py --poll 4
+    ```
 
-To mark a student's course as completed in Moodle, run the following command:
-```
-python main.py --mark 4
-```
+* To mark a student's course as completed in Moodle, run the following command:
+    ```
+    python main.py --mark 4
+    ```
 
 ## Docker
 
