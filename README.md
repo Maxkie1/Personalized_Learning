@@ -68,7 +68,7 @@ docker run personalized_learning
 
 To run the application locally, you need to have Python 3.10 installed on your machine. To install Python 3.10, follow the instructions on the [Python website](https://www.python.org/downloads/).
 
-Additionally, you need to have the following libraries installed:
+The following libraries are required to run the application:
 
 - `pandas`
 - `pangres`
@@ -94,7 +94,7 @@ conda activate <thisproject>
 pip install -r requirements.txt
 ```
 
-Additionally place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the content of the `.env` file.
+Additionally, place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the contents of the `.env` file.
 
 # Contributors
 
