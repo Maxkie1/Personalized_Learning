@@ -1,10 +1,9 @@
 """This module contains moodle API functionalities."""
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 import dotenv
 import os
-from pprint import pprint
 
 dotenv.load_dotenv()
 PERSONALIZED_LEARNING_TOKEN = os.getenv("PERSONALIZED_LEARNING_TOKEN")
@@ -12,7 +11,7 @@ MOODLE_USERNAME = os.getenv("MOODLE_USERNAME")
 MOODLE_PASSWORD = os.getenv("MOODLE_PASSWORD")
 
 
-def get_enrolled_users(course_id):
+def get_enrolled_users(course_id: int) -> list[dict]:
     """Get enrolled users of a course.
 
     Args:
@@ -37,12 +36,12 @@ def get_enrolled_users(course_id):
         if "exception" not in data:
             return data
         else:
-            raise Exception("Course with ID {} does not exist.".format(course_id))
+            raise Exception("Error while retrieving enrolled users.")
     else:
         raise Exception("Error while retrieving enrolled users.")
 
 
-def get_user_activities_completion(user_id, course_id):
+def get_user_activities_completion(user_id: int, course_id: int) -> list[dict]:
     """Get user activities completion status within a course for a specific user.
 
     Args:
@@ -69,17 +68,17 @@ def get_user_activities_completion(user_id, course_id):
         if "exception" not in data:
             return data
         else:
-            raise Exception("Course with ID {} does not exist.".format(course_id))
+            raise Exception("Error while retrieving user activities completion status.")
     else:
         raise Exception("Error while retrieving user activities completion status.")
 
 
-def get_user_course_completion(course_id, user_id):
+def get_user_course_completion(user_id: int, course_id: int) -> list[dict]:
     """Get user course completion status for a specific user.
 
     Args:
-        course_id: The ID of the course for which the course completion status should be retrieved.
         user_id: The ID of the user whose course completion status should be retrieved.
+        course_id: The ID of the course for which the course completion status should be retrieved.
 
     Returns:
         A list of course completion status.
@@ -101,23 +100,16 @@ def get_user_course_completion(course_id, user_id):
         if "exception" not in data:
             return data
         else:
-            raise Exception(
-                "Course with ID {} does not exist or no completion criteria available.".format(
-                    course_id
-                )
-            )
+            raise Exception("Error while retrieving user course completion status.")
     else:
         raise Exception("Error while retrieving user course completion status.")
 
 
-def mark_course_completed(course_id):
+def mark_course_completed(course_id: int) -> None:
     """Mark course as completed for a specific user.
 
     Args:
         course_id: The ID of the course which should be marked as completed.
-
-    Returns:
-        Success message.
     """
 
     url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/webservice/rest/server.php"
@@ -132,19 +124,13 @@ def mark_course_completed(course_id):
 
     if response.status_code == 200:
         data = response.json()
-        if "exception" not in data:
-            return data
-        else:
-            raise Exception(
-                "Course with ID {} does not exist, no completion criteria available or user already completed the course.".format(
-                    course_id
-                )
-            )
+        if "exception" in data:
+            raise Exception("Error while marking course as completed.")
     else:
         raise Exception("Error while marking course as completed.")
 
 
-def session_login():
+def session_login() -> requests.Session:
     """Login to Moodle to enable further requests.
 
     Returns:
@@ -171,10 +157,10 @@ def session_login():
     if response.status_code == 200:
         return session
     else:
-        raise Exception("Failed to login")
+        raise Exception("Error while logging in.")
 
 
-def session_logout(session):
+def session_logout(session: requests.Session) -> None:
     """Logout from Moodle to end the session.
 
     Args:
@@ -191,10 +177,10 @@ def session_logout(session):
     if response.status_code == 200:
         session.close()
     else:
-        raise Exception("Failed to logout")
+        raise Exception("Error while logging out.")
 
 
-def moodle_access_user_logs(user_id, course_id, session):
+def moodle_access_user_logs(user_id: int, course_id: int, session: requests.Session) -> list[BeautifulSoup]:
     """Access the user logs pages of a course for a specific user.
 
     The user logs pages contains the activity logs of a user within a course.
@@ -239,10 +225,10 @@ def moodle_access_user_logs(user_id, course_id, session):
 
         return soups
     else:
-        raise Exception("Failed to retrieve user logs")
+        raise Exception("Error while accessing user logs pages.")
 
 
-def extract_user_activity_logs(soups):
+def extract_user_activity_logs(soups: list[BeautifulSoup]) -> list[dict]:
     """Extract the user activity logs from the user logs pages.
 
     Args:
@@ -275,7 +261,7 @@ def extract_user_activity_logs(soups):
     return activity_logs
 
 
-def create_activity_log(cells):
+def create_activity_log(cells: ResultSet) -> dict:
     """Create an activity log from a table row of the user logs page.
 
     Args:
@@ -310,7 +296,7 @@ def create_activity_log(cells):
     return activity
 
 
-def get_user_activity_logs(user_id, course_id):
+def get_user_activity_logs(user_id: int, course_id: int) -> list[dict]:
     """Get user activity logs within a course for a specific user.
 
     Args:
@@ -342,7 +328,7 @@ def get_user_activity_logs(user_id, course_id):
     return activity_logs
 
 
-def aggregate_user_activity_logs(course_id):
+def aggregate_user_activity_logs(course_id: int) -> list[dict]:
     """Aggregate the user activity logs of all users within a course.
 
     Args:
@@ -368,7 +354,7 @@ def aggregate_user_activity_logs(course_id):
     return activity_logs
 
 
-def add_user_to_group(user_id, learning_style):
+def add_user_to_group(user_id: int, learning_style: int) -> None:
     """Add a user to a learning style group.
 
     Each group represents a learning style. The user is added to respective group of his/her learning style.
@@ -400,10 +386,10 @@ def add_user_to_group(user_id, learning_style):
     response = requests.post(url, params=params)
 
     if response.status_code != 200:
-        raise Exception("Failed to add user to group")
+        raise Exception("Error while adding user to group.")
 
 
-def delete_user_from_group(user_id, learning_style):
+def delete_user_from_group(user_id: int, learning_style: int) -> None:
     """Delete a user from a learning style group.
 
     Args:
@@ -423,10 +409,10 @@ def delete_user_from_group(user_id, learning_style):
     response = requests.post(url, params=params)
 
     if response.status_code != 200:
-        raise Exception("Failed to delete user from group")
+        raise Exception("Error while deleting user from group.")
 
 
-def get_group_members(group_ids):
+def get_group_members(group_ids: list[int]) -> list[dict]:
     """Get the members of all learning style groups.
 
     Args:
@@ -457,10 +443,10 @@ def get_group_members(group_ids):
         data = response.json()
         return data
     else:
-        raise Exception("Failed to get group members")
+        raise Exception("Error while retrieving group members.")
 
 
-def is_user_in_group(user_id):
+def is_user_in_group(user_id: int) -> tuple[bool, int]:
     """Check if a user is in any group.
 
     Args:
@@ -480,7 +466,7 @@ def is_user_in_group(user_id):
     return False, None
 
 
-def learning_style_assignment(predicted_ls, user_id, confidence):
+def assign_learning_style(predicted_ls: int, user_id: int, confidence: float) -> None:
     """Assign a user to a learning style group in Moodle if the confidence is high enough.
 
     Does nothing if the previous learning style is the same as the new learning style.
