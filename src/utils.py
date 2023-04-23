@@ -109,6 +109,7 @@ def poll(course_id):
                 predict_and_assign(course_id, True, user["id"])
         time.sleep(60)
 
+
 def student_meets_prediction_criteria(course_id, user_id):
     """Check if a student meets the prediction criteria.
 
@@ -121,7 +122,7 @@ def student_meets_prediction_criteria(course_id, user_id):
     Returns:
         Boolean value indicating whether the student meets the prediction criteria.
     """
-    
+
     course_completion = moodle.get_user_course_completion(user_id, course_id)
     if course_completion["completionstatus"]["completions"][0]["complete"]:
         print(
@@ -137,7 +138,6 @@ def student_meets_prediction_criteria(course_id, user_id):
             )
         )
         return False
-
 
 
 def mark_completed(course_id):

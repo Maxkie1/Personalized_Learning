@@ -124,15 +124,34 @@ def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
     Returns:
         The activity logs as a dataframe.
     """
-    
-    activity_types = ['Book', 'Forum', 'FAQ', 'Quiz', 'Glossary', 'URL', 'File', 'Video', 'Image', 'Chat', 'Workshop', 'Page', 'Assignment', 'Folder', 'Lesson', 'Example']
-    
+
+    activity_types = [
+        "Book",
+        "Forum",
+        "FAQ",
+        "Quiz",
+        "Glossary",
+        "URL",
+        "File",
+        "Video",
+        "Image",
+        "Chat",
+        "Workshop",
+        "Page",
+        "Assignment",
+        "Folder",
+        "Lesson",
+        "Example",
+    ]
+
     # initialize dataframe with student IDs as index and activity types as columns
-    student_ids = set([int(log["description"].split(" ")[4][1:-1]) for log in activity_logs])
+    student_ids = set(
+        [int(log["description"].split(" ")[4][1:-1]) for log in activity_logs]
+    )
     student_ids = sorted(list(student_ids))
     df = pd.DataFrame(index=student_ids, columns=activity_types).fillna(0)
     df.index.name = "student_id"
-    
+
     # increment count for each student-activity combination in the logs
     for log in activity_logs:
         student_id = int(log["description"].split(" ")[4][1:-1])
@@ -140,7 +159,6 @@ def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
         df.loc[student_id, activity_type] += 1
 
     return df
-
 
 
 def df_row_to_new_df(df: pd.DataFrame, index: int, index_name: str) -> pd.DataFrame:
@@ -194,7 +212,9 @@ def transform_data(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return x_data, y_data
 
 
-def split_data(x_data: pd.DataFrame, y_data: pd.DataFrame, test_size: float) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def split_data(
+    x_data: pd.DataFrame, y_data: pd.DataFrame, test_size: float
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Split data.
 
     Split incoming data into train and test sets.

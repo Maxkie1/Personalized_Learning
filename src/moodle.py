@@ -180,7 +180,9 @@ def session_logout(session: requests.Session) -> None:
         raise Exception("Error while logging out.")
 
 
-def moodle_access_user_logs(user_id: int, course_id: int, session: requests.Session) -> list[BeautifulSoup]:
+def moodle_access_user_logs(
+    user_id: int, course_id: int, session: requests.Session
+) -> list[BeautifulSoup]:
     """Access the user logs pages of a course for a specific user.
 
     The user logs pages contains the activity logs of a user within a course.

@@ -34,6 +34,7 @@ from src.utils import (
 
 # TODO: add handling for polling and course completion status, maybe first flag
 
+
 def main(args):
     """Main function."""
 
