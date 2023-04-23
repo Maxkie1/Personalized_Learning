@@ -1,10 +1,10 @@
-<h1 align="center">Welcome to Personalized Learning :wave:</h1>
+<h1 align="center">Welcome to Personalized Learning :mortar_board:</h1>
 
-> The personalized learning project involves retrieving student activity logs from Moodle, predicting their learning style using a machine learning model based on the Felder-Silverman model and assigning them to a corresponding learning style group with access to specific course activities.
+> The Personalized Learning project involves retrieving student activity logs from Moodle, predicting their learning style using a machine learning model based on the Felder-Silverman model and assigning them to a corresponding learning style group with access to specific course activities.
   
 # Description
 
-The personalized learning project is about retrieving student activity logs from Moodle, aggregating them and predicting the learning style of a student. The learning style is then used to assign the student to a learning style group in Moodle. Each learning style group has access to a different set of course activities. The prediction is done by a machine learning model that is trained on synthetic data. The Felder-Silverman learning style model is the theoretical foundation of the application.
+The Personalized Learning project is about retrieving student activity logs from Moodle, aggregating them and predicting the learning style of a student. The learning style is then used to assign the student to a learning style group in Moodle. Each learning style group has access to a different set of course activities. The prediction is done by a machine learning model that is trained on synthetic data. The Felder-Silverman learning style model is the theoretical foundation of the application.
 
 # Usage
 
