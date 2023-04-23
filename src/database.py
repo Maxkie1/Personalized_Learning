@@ -1,12 +1,12 @@
 """This module contains database functionalities."""
 
 from pangres import upsert
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, Engine
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
 
 
-def create_db_engine(path):
+def create_db_engine(path: str) -> Engine:
     """Create engine to SQLite database.
 
     Create an engine to the SQLite database at the given path.
@@ -23,7 +23,7 @@ def create_db_engine(path):
     return engine
 
 
-def initialize_activity_table(engine):
+def initialize_activity_table(engine: Engine):
     """Initialize activity table in database.
 
     Create the activity table in the database if it does not exist yet.
@@ -42,7 +42,7 @@ def initialize_activity_table(engine):
         connection.commit()
 
 
-def insert_student_data(engine, df):
+def insert_student_data(engine: Engine, df: pd.DataFrame):
     """Insert data into activity table.
 
     Insert a dataframe into the activity table.
@@ -71,11 +71,14 @@ def insert_student_data(engine, df):
         )
 
 
-def fetch_complete_data(engine):
+def fetch_complete_data(engine: Engine) -> list[tuple]:
     """Fetch complete data from activity table.
 
     Args:
         engine: The engine object to the database.
+
+    Returns
+        A list of tuples containing the complete data from the activity table.
     """
 
     query = "SELECT * FROM student_activities"
@@ -94,12 +97,15 @@ def fetch_complete_data(engine):
         raise e
 
 
-def fetch_student_data(engine, student_id):
+def fetch_student_data(engine: Engine, student_id: int) -> tuple:
     """Fetch data of a specific student from activity table.
 
     Args:
         engine: The engine object to the database.
         student_id: The student ID of the student whose data should be fetched.
+
+    Returns:
+        A tuple containing the data of the student.
     """
 
     query = "SELECT * FROM student_activities WHERE student_id=:student_id"
@@ -123,7 +129,7 @@ def fetch_student_data(engine, student_id):
         raise e
 
 
-def update_student_data(engine, df):
+def update_student_data(engine: Engine, df: pd.DataFrame):
     """Update a specific student's data in activity table.
 
     This function calculates the difference between the values of the dataframe and the values of the database and inserts the result into the database.
