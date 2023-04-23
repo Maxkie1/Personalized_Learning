@@ -8,7 +8,7 @@ The personalized learning project is about retrieving student activity logs from
 
 # Usage
 
-The application can be run in two modes: local and Docker. In the local mode the application can be run from the command line. In the Docker mode the application can be run in a Docker container. Each mode offers a different set of features.
+The application can be run in two modes: [Local](#local) and [Docker](#docker). In the Local mode the application can be run from the command line. In the Docker mode the application can be run in a Docker container. Each mode offers a different set of features.
 
 ## Local
 
@@ -27,10 +27,12 @@ The application can be run with the following arguments:
 
 ### Examples
 
-To train the machine learning model, run the following command:
-```
-python main.py --train
-```
+Here are some examples of how to run the application from the command line.
+
+* To train the machine learning model, run the following command:
+    ```
+    python main.py --train
+    ```
 
 To aggregate activity logs from Moodle, predict learning style of a student and assign the student to a learning style group in Moodle, run the following command:
 ``` 
@@ -49,7 +51,8 @@ python main.py --mark 4
 
 ## Docker
 
-In the Docker mode the application exclusively runs with the `--poll` argument as defined in the `Dockerfile`. To run the application in the Docker mode, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
+In the Docker mode the application exclusively runs with the `--poll` argument which is automatically run at startup of the Docker container.
+To run the application in the Docker mode, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
 
 To build the Docker image, run the following command:
 ```
