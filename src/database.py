@@ -124,7 +124,11 @@ def fetch_student_data(engine: Engine, student_id: int) -> tuple:
                 )
                 return result
             except IndexError:
-                print("db.fetch_student_data: Student ID {} does not exist.".format(student_id))
+                print(
+                    "db.fetch_student_data: Student ID {} does not exist.".format(
+                        student_id
+                    )
+                )
                 return None
     except SQLAlchemyError as e:
         raise e
@@ -145,18 +149,26 @@ def update_student_data(engine: Engine, df: pd.DataFrame):
 
         db_data = fetch_student_data(engine, student_id)
         if db_data is None:
-            print("db.update_student_data: Creating new entry for student ID {}...".format(student_id))
+            print(
+                "db.update_student_data: Creating new entry for student ID {}...".format(
+                    student_id
+                )
+            )
             student_data = data.df_row_to_new_df(df, student_id, "student_id")
             insert_student_data(engine, student_data)
             continue
-        
+
         db_data = list(db_data)[1:]
         df_data = list(df.loc[student_id].values)
         print("db_data", db_data)
         print("df_Data", df_data)
 
         if db_data == df_data:
-            print("db.update_student_data: No update required for student ID {}.".format(student_id))
+            print(
+                "db.update_student_data: No update required for student ID {}.".format(
+                    student_id
+                )
+            )
             continue
 
         diff = [df_data[i] - db_data[i] for i in range(len(db_data))]
@@ -184,4 +196,3 @@ def update_student_data(engine: Engine, df: pd.DataFrame):
 
         insert_student_data(engine, df_new)
         print("db.update_student_data: Updated student ID {}.".format(student_id))
-        
