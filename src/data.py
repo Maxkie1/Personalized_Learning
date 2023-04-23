@@ -6,7 +6,7 @@ from sdv.tabular import TVAE
 from sklearn.model_selection import train_test_split
 
 
-def create_synthetic_dataset(sample_size):
+def create_synthetic_dataset(sample_size: int) -> pd.DataFrame:
     """Create synthetic dataset.
 
     Create a synthetic dataset with SDV using the VTAE model.
@@ -104,10 +104,6 @@ def create_synthetic_dataset(sample_size):
         "primary_key": "student_id",
     }
 
-    # model = TabularPreset(name="FAST_ML", metadata=metadata)
-    # model = CTGAN(table_metadata=metadata, verbose=True)
-    # model = GaussianCopula(table_metadata=metadata)
-    # model = CopulaGAN(table_metadata=metadata, verbose=True)
     model = TVAE(table_metadata=metadata)
     model.fit(dataset)
     synthetic_dataset = model.sample(num_rows=sample_size)
@@ -115,10 +111,10 @@ def create_synthetic_dataset(sample_size):
     return synthetic_dataset
 
 
-def activity_logs_to_dataframe(activity_logs):
+def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
     """Convert activity logs to dataframe.
 
-    This functions counts how often a student has interacted with a specific type of activity by using the activity logs.
+    This function counts how often a student has interacted with a specific type of activity by using the activity logs.
     The result is a dataframe with a row per student and a column per activity type.
     Following activity types are considered: Book, Forum, FAQ, Quiz, Glossary, URL, File, Video, Image, Chat, Workshop, Page, Assignment, Folder, Lesson, Example.
 
@@ -128,44 +124,26 @@ def activity_logs_to_dataframe(activity_logs):
     Returns:
         The activity logs as a dataframe.
     """
-
-    df = pd.DataFrame()
-    df["student_id"] = 0
+    
+    activity_types = ['Book', 'Forum', 'FAQ', 'Quiz', 'Glossary', 'URL', 'File', 'Video', 'Image', 'Chat', 'Workshop', 'Page', 'Assignment', 'Folder', 'Lesson', 'Example']
+    
+    # initialize dataframe with student IDs as index and activity types as columns
+    student_ids = set([int(log["description"].split(" ")[4][1:-1]) for log in activity_logs])
+    student_ids = sorted(list(student_ids))
+    df = pd.DataFrame(index=student_ids, columns=activity_types).fillna(0)
+    df.index.name = "student_id"
+    
+    # increment count for each student-activity combination in the logs
     for log in activity_logs:
-        if int((log["description"].split(" ")[4])[1:-1]) not in df["student_id"].values:
-            df = df.append(
-                {"student_id": int((log["description"].split(" ")[4])[1:-1])},
-                ignore_index=True,
-            )
-    df["Book"] = 0
-    df["Forum"] = 0
-    df["FAQ"] = 0
-    df["Quiz"] = 0
-    df["Glossary"] = 0
-    df["URL"] = 0
-    df["File"] = 0
-    df["Video"] = 0
-    df["Image"] = 0
-    df["Chat"] = 0
-    df["Workshop"] = 0
-    df["Page"] = 0
-    df["Assignment"] = 0
-    df["Folder"] = 0
-    df["Lesson"] = 0
-    df["Example"] = 0
-
-    for log in activity_logs:
-        df.loc[
-            df["student_id"] == int((log["description"].split(" ")[4])[1:-1]),
-            log["component"],
-        ] += 1
-
-    df.set_index("student_id", inplace=True)
+        student_id = int(log["description"].split(" ")[4][1:-1])
+        activity_type = log["component"]
+        df.loc[student_id, activity_type] += 1
 
     return df
 
 
-def df_row_to_new_df(df, index, index_name):
+
+def df_row_to_new_df(df: pd.DataFrame, index: int, index_name: str) -> pd.DataFrame:
     """Convert dataframe row to new dataframe.
 
     This function converts a row of a dataframe to a new dataframe.
@@ -185,7 +163,7 @@ def df_row_to_new_df(df, index, index_name):
     return new_df
 
 
-def transform_data(data):
+def transform_data(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Transform data.
 
     Transform incoming data into separate feature and label dataframes that can be used for training.
@@ -216,7 +194,7 @@ def transform_data(data):
     return x_data, y_data
 
 
-def split_data(x_data, y_data, test_size):
+def split_data(x_data: pd.DataFrame, y_data: pd.DataFrame, test_size: float) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Split data.
 
     Split incoming data into train and test sets.
