@@ -215,11 +215,10 @@ def access_user_logs(
         pagination = first_visit.find("nav", {"class": "pagination"})
         if pagination:
             num_pages = int(pagination.find_all("li")[-2].text)
-            print(f"moodle.access_user_logs: {num_pages} user logs pages found.")
+            print(f"moodle.access_user_logs: {num_pages} user logs pages found initially.")
         else:
             num_pages = 1
-            print("moodle.access_user_logs: 1 user logs page found.")
-
+            print("moodle.access_user_logs: 1 user logs page found initially.")
         # extract the soup objects of all pages
         soups = []
         for page in range(num_pages):
@@ -230,8 +229,8 @@ def access_user_logs(
             if pagination:
                 new_num_pages = int(pagination.find_all("li")[-2].text)
                 if new_num_pages != num_pages:
-                    print(f"moodle.access_user_logs: Number of user logs pages changed from {num_pages} to {new_num_pages}.")
                     num_pages = new_num_pages
+        print(f"moodle.access_user_logs: {num_pages} user logs pages accessed in total.")    
         return soups
     else:
         raise Exception("Error while accessing user logs pages.")
