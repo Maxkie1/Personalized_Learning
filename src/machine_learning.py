@@ -3,6 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import pandas as pd
 
 
 class NeuralNet(nn.Module):
@@ -21,7 +22,9 @@ class NeuralNet(nn.Module):
         return x
 
 
-def train_model(x_train, y_train, num_epochs):
+def train_model(
+    x_train: pd.DataFrame, y_train: pd.DataFrame, num_epochs: int
+) -> NeuralNet:
     """Train the PyTorch model.
 
     Args:
@@ -41,7 +44,6 @@ def train_model(x_train, y_train, num_epochs):
     x_train = torch.tensor(x_train.values, dtype=torch.float32)
     y_train = torch.tensor(y_train.values, dtype=torch.long)
 
-
     for epoch in range(num_epochs + 1):
         y_pred = model(x_train)
         loss = loss_fn(y_pred, y_train)
@@ -54,11 +56,19 @@ def train_model(x_train, y_train, num_epochs):
                 if torch.argmax(y_pred[i]) == y_train[i]:
                     correct += 1
             accuracy = correct / len(y_pred)
-            print("ml.train_model: Epoch: ", epoch, "| Accuracy: ", accuracy, "| Loss: ", loss.item())
+            print(
+                "ml.train_model: Epoch: ",
+                epoch,
+                "| Accuracy: ",
+                accuracy,
+                "| Loss: ",
+                loss.item(),
+            )
 
     return model
 
-def evaluate_model(x_test, y_test, model):
+
+def evaluate_model(x_test: pd.DataFrame, y_test: pd.DataFrame, model: NeuralNet):
     """Evaluate the PyTorch model.
 
     Args:
@@ -79,12 +89,13 @@ def evaluate_model(x_test, y_test, model):
         accuracy = correct / len(y_pred)
         print("ml.evaluate_model: Test Accuracy: ", accuracy)
 
-def predict(x, model):
+
+def predict(x: list, model: NeuralNet) -> tuple:
     """Predict the learning style of a student.
 
     Args:
-        x: Student data as array.
-        model: Trained model.
+        x: The student data as array.
+        model: The trained model.
 
     Returns:
         The predicted learning style group ID and confidence.
@@ -122,12 +133,12 @@ def predict(x, model):
     return label.item() + 1, confidence
 
 
-def save_model(model, path):
+def save_model(model: NeuralNet, path: str):
     """Save the PyTorch model.
 
     Args:
-        model: Trained model.
-        path: Path to save the model.
+        model: The trained model.
+        path: The path to save the model.
     """
 
     torch.save(model.state_dict(), path)
@@ -135,12 +146,11 @@ def save_model(model, path):
     print("ml.save_model: Model saved to {}.".format(path))
 
 
-
-def load_model(path):
+def load_model(path: str) -> NeuralNet:
     """Load the PyTorch model.
 
     Args:
-        path: Path to the model.
+        path: The Path to the model.
 
     Returns:
         The loaded model.
