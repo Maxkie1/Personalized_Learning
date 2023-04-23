@@ -177,7 +177,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--assign",
-        help="Assign user to learning style group in Moodle. Requires --predict.",
+        help="Assign an user to learning style group in Moodle. Requires --predict.",
         action="store_true",
     )
     parser.add_argument(

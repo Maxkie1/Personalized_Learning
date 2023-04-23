@@ -11,7 +11,7 @@ The application can be run from the command line with the following arguments:
     --train: Train the machine learning model on a synthetic dataset.
     --aggregate: Aggregate activity logs from Moodle. Requires a course ID.
     --predict: Predict learning style of an user. Requires a course ID and at least one prior --aggregate run.
-    --assign: Assign user to learning style group in Moodle. Requires --predict.
+    --assign: Assign an user to learning style group in Moodle. Requires --predict.
     --poll: Periodically poll Moodle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.
     --mark: Mark an user's course as completed in Moodle. Requires a course ID.
 
