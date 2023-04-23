@@ -4,6 +4,7 @@ from pangres import upsert
 from sqlalchemy import create_engine, text, Engine
 from sqlalchemy.exc import SQLAlchemyError
 import pandas as pd
+import src.data as data
 
 
 def create_db_engine(path: str) -> Engine:
@@ -112,19 +113,19 @@ def fetch_student_data(engine: Engine, student_id: int) -> tuple:
 
     try:
         with engine.connect() as connection:
-            result = connection.execute(text(query), {"student_id": student_id})
+            result = connection.execute(text(query), {"student_id": int(student_id)})
             try:
                 rows = result.fetchall()
+                result = rows[0]
                 print(
-                    "db.fetch_student_data: Fetched data of student ID {} from database.".format(
+                    "db.fetch_student_data: Fetched data of student ID {}.".format(
                         student_id
                     )
                 )
-                return rows[0]
-            except IndexError as e:
-                raise Exception(
-                    "Student ID {} does not exist in database.".format(student_id)
-                )
+                return result
+            except IndexError:
+                print("db.fetch_student_data: Student ID {} does not exist.".format(student_id))
+                return None
     except SQLAlchemyError as e:
         raise e
 
@@ -136,38 +137,51 @@ def update_student_data(engine: Engine, df: pd.DataFrame):
 
     Args:
         engine: The engine object to the database.
-        df: The dataframe containing
+        df: The dataframe containing the student data to be updated.
     """
 
-    db_data = fetch_student_data(engine, df.index.values[0])
-    db_data = list(db_data)[1:]
-    df_data = list(df.values[0])
+    for student_id in df.index.values:
+        print("db.update_student_data: Updating student ID {}...".format(student_id))
 
-    diff = [df_data[i] - db_data[i] for i in range(len(df_data))]
+        db_data = fetch_student_data(engine, student_id)
+        if db_data is None:
+            print("db.update_student_data: Creating new entry for student ID {}...".format(student_id))
+            student_data = data.df_row_to_new_df(df, student_id, "student_id")
+            insert_student_data(engine, student_data)
+            continue
+        
+        db_data = list(db_data)[1:]
+        df_data = list(df.loc[student_id].values)
+        print("db_data", db_data)
+        print("df_Data", df_data)
 
-    df_new = pd.DataFrame()
-    df_new["student_id"] = [df.index.values[0]]
-    df_new["Book"] = [diff[0]]
-    df_new["Forum"] = [diff[1]]
-    df_new["FAQ"] = [diff[2]]
-    df_new["Quiz"] = [diff[3]]
-    df_new["Glossary"] = [diff[4]]
-    df_new["URL"] = [diff[5]]
-    df_new["File"] = [diff[6]]
-    df_new["Video"] = [diff[7]]
-    df_new["Image"] = [diff[8]]
-    df_new["Chat"] = [diff[9]]
-    df_new["Workshop"] = [diff[10]]
-    df_new["Page"] = [diff[11]]
-    df_new["Assignment"] = [diff[12]]
-    df_new["Folder"] = [diff[13]]
-    df_new["Lesson"] = [diff[14]]
-    df_new["Example"] = [diff[15]]
-    df_new.set_index("student_id", inplace=True)
+        if db_data == df_data:
+            print("db.update_student_data: No update required for student ID {}.".format(student_id))
+            continue
 
-    insert_student_data(engine, df_new)
-    print(
-        "db.update_student_data: Updated data of student ID {} in database.".format(
-            df.index.values[0]
-        )
-    )
+        diff = [df_data[i] - db_data[i] for i in range(len(db_data))]
+        print("diff", diff)
+
+        df_new = pd.DataFrame()
+        df_new["student_id"] = [student_id]
+        df_new["Book"] = [diff[0]]
+        df_new["Forum"] = [diff[1]]
+        df_new["FAQ"] = [diff[2]]
+        df_new["Quiz"] = [diff[3]]
+        df_new["Glossary"] = [diff[4]]
+        df_new["URL"] = [diff[5]]
+        df_new["File"] = [diff[6]]
+        df_new["Video"] = [diff[7]]
+        df_new["Image"] = [diff[8]]
+        df_new["Chat"] = [diff[9]]
+        df_new["Workshop"] = [diff[10]]
+        df_new["Page"] = [diff[11]]
+        df_new["Assignment"] = [diff[12]]
+        df_new["Folder"] = [diff[13]]
+        df_new["Lesson"] = [diff[14]]
+        df_new["Example"] = [diff[15]]
+        df_new.set_index("student_id", inplace=True)
+
+        insert_student_data(engine, df_new)
+        print("db.update_student_data: Updated student ID {}.".format(student_id))
+        

@@ -42,7 +42,7 @@ def aggregate(course_id: int, user_id: int = None):
 
     aggregate_engine = db.create_db_engine(DATABASE_PATH)
     db.initialize_activity_table(aggregate_engine)
-    db.insert_student_data(aggregate_engine, df)
+    db.update_student_data(aggregate_engine, df)
     aggregate_engine.dispose()
 
 

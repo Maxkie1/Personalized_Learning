@@ -180,7 +180,7 @@ def session_logout(session: requests.Session) -> None:
         raise Exception("Error while logging out.")
 
 
-def moodle_access_user_logs(
+def access_user_logs(
     user_id: int, course_id: int, session: requests.Session
 ) -> list[BeautifulSoup]:
     """Access the user logs pages of a course for a specific user.
@@ -215,8 +215,10 @@ def moodle_access_user_logs(
         pagination = first_visit.find("nav", {"class": "pagination"})
         if pagination:
             num_pages = int(pagination.find_all("li")[-2].text)
+            print(f"moodle.access_user_logs: {num_pages} user logs pages found.")
         else:
             num_pages = 1
+            print("moodle.access_user_logs: 1 user logs page found.")
 
         # extract the soup objects of all pages
         soups = []
@@ -224,7 +226,12 @@ def moodle_access_user_logs(
             params["page"] = page
             response = session.get(url, params=params)
             soups.append(BeautifulSoup(response.content, "html.parser"))
-
+            pagination = soups[-1].find("nav", {"class": "pagination"})
+            if pagination:
+                new_num_pages = int(pagination.find_all("li")[-2].text)
+                if new_num_pages != num_pages:
+                    print(f"moodle.access_user_logs: Number of user logs pages changed from {num_pages} to {new_num_pages}.")
+                    num_pages = new_num_pages
         return soups
     else:
         raise Exception("Error while accessing user logs pages.")
@@ -319,7 +326,7 @@ def get_user_activity_logs(user_id: int, course_id: int) -> list[dict]:
     session = session_login()
 
     # access the user logs pages of a course
-    soups = moodle_access_user_logs(user_id, course_id, session)
+    soups = access_user_logs(user_id, course_id, session)
 
     # extract the user activity logs from the user logs pages
     activity_logs = extract_user_activity_logs(soups)
