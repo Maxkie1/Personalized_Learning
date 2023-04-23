@@ -20,7 +20,7 @@ The application can be run with the following arguments:
 --aggregate: Aggregate activity logs from Moodle. Requires a course ID.
 --predict: Predict learning style of an user. Requires a course ID and at least one prior --aggregate run.
 --assign: Assign an user to learning style group in Moodle. Requires --predict.
---poll: Periodically poll Modle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.
+--poll: Periodically poll Moodle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.
 --mark: Mark a user's course as completed in Moodle. Requires a course ID.
 --help: Show help message.
 ```

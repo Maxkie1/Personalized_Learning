@@ -182,7 +182,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--poll",
-        help="Periodically poll Modle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.",
+        help="Periodically poll Moodle for user's course completion status and trigger learning style prediction pipeline. Requires a course ID.",
         action="store",
         type=int,
     )
