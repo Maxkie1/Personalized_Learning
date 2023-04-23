@@ -51,8 +51,7 @@ Here are some examples of how to run the application from the command line:
 
 ## Docker
 
-In the Docker mode the application exclusively runs with the `--poll` argument which is automatically run at startup of the Docker container.
-To run the application in the Docker mode, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
+In the Docker mode the application exclusively runs with the `--poll` argument which is automatically executed when the Docker container is started. To run the application in the Docker mode, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
 
 To build the Docker image, run the following command:
 ```
