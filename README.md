@@ -64,7 +64,7 @@ This application can be installed in two ways: [Local](#local-installation) and 
 
 ## Requirements
 
-The application is based on Python 3.10.
+The application is based on Python 3.10.  
 The following Python libraries and their dependencies are required to run the application:
 
 - `pandas`
