@@ -86,11 +86,11 @@ The following Python libraries and their dependencies are required to run the ap
 2. Place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the contents of the `.env` file.
 
 3. Install the required libraries.  
-To install the required libraries globally, run the following command (**unrecommended**):
+
+    To install the required libraries globally, run the following command (**unrecommended**):
     ```
     pip install -r requirements.txt
     ```
-
     To install the required libraries in a conda environment, run the following command (**recommended**):
 
     ```
