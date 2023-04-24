@@ -180,7 +180,7 @@ def session_logout(session: requests.Session) -> None:
         raise Exception("Error while logging out.")
 
 
-def access_user_logs(
+def access_user_logs2(
     user_id: int, course_id: int, session: requests.Session
 ) -> list[BeautifulSoup]:
     """Access the user logs pages of a course for a specific user.
@@ -238,6 +238,69 @@ def access_user_logs(
         return soups
     else:
         raise Exception("Error while accessing user logs pages.")
+
+
+def access_user_logs(
+    user_id: int, course_id: int, session: requests.Session
+) -> list[BeautifulSoup]:
+    """Access the user logs pages of a course for a specific user.
+
+    The user logs pages contains the activity logs of an user within a course.
+    The pages are parsed with BeautifulSoup to extract the activity logs.
+
+    Sample url for course_id 4 and user_id 8:
+    http://ai-in-education.dhbw-stuttgart.de/moodle/report/log/index.php?chooselog=1&showusers=0&showcourses=0&id=4&group=&user=8&date=&modid=&modaction=r&origin=&edulevel=2&logreader=logstore_standard&page=0
+
+    Args:
+        user_id: The ID of the user whose user logs pages should be accessed.
+        course_id: The ID of the course for which the user logs pages should be accessed.
+        session: The already logged in Moodle session.
+
+    Returns:
+        A list oof user logs pages as BeautifulSoup objects.
+    """
+
+    url = f"http://ai-in-education.dhbw-stuttgart.de/moodle/report/log/index.php"
+    params = {
+        "chooselog": 1,
+        "showusers": 0,
+        "showcourses": 0,
+        "id": course_id,
+        "group": "",
+        "user": user_id,
+        "date": "",
+        "modid": "",
+        "modaction": "r",
+        "origin": "",
+        "edulevel": 2,
+        "logreader": "logstore_standard",
+        "page": 0,
+    }
+    response = session.get(url, params=params)
+
+    if response.status_code == 200:
+        # parse the response with BeautifulSoup
+        first_visit = BeautifulSoup(response.content, "html.parser")
+
+        # find the number of pages
+        pagination = first_visit.find("nav", {"class": "pagination"})
+        if pagination:
+            num_pages = int(pagination.find_all("li")[-2].text)
+        else:
+            num_pages = 1
+        # extract the soup objects of all pages
+        soups = []
+        for page in range(num_pages):
+            params["page"] = page
+            response = session.get(url, params=params)
+            soups.append(BeautifulSoup(response.content, "html.parser"))
+        if num_pages > 1:
+            print(
+                f"moodle.access_user_logs: {num_pages} user logs pages accessed in total."
+            )
+        else:
+            print("moodle.access_user_logs: 1 user logs page accessed in total.")
+        return soups
 
 
 def extract_user_activity_logs(soups: list[BeautifulSoup]) -> list[dict]:

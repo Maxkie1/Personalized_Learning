@@ -52,7 +52,7 @@ def create_synthetic_dataset(sample_size: int) -> pd.DataFrame:
     dataset_size = 1000
 
     dataset = pd.DataFrame()
-    dataset["student_id"] = np.arange(dataset_size)
+    dataset["user_id"] = np.arange(dataset_size)
     dataset["Book"] = np.random.randint(0, 10, dataset_size)
     dataset["Forum"] = np.random.randint(0, 10, dataset_size)
     dataset["FAQ"] = np.random.randint(0, 10, dataset_size)
@@ -81,7 +81,7 @@ def create_synthetic_dataset(sample_size: int) -> pd.DataFrame:
 
     metadata = {
         "fields": {
-            "student_id": {"type": "id", "subtype": "integer"},
+            "user_id": {"type": "id", "subtype": "integer"},
             "Book": {"type": "numerical", "subtype": "integer"},
             "Forum": {"type": "numerical", "subtype": "integer"},
             "FAQ": {"type": "numerical", "subtype": "integer"},
@@ -101,7 +101,7 @@ def create_synthetic_dataset(sample_size: int) -> pd.DataFrame:
             "label": {"type": "categorical"},
         },
         "constraints": [],
-        "primary_key": "student_id",
+        "primary_key": "user_id",
     }
 
     model = TVAE(table_metadata=metadata)
@@ -150,7 +150,7 @@ def activity_logs_to_dataframe(activity_logs: list[dict]) -> pd.DataFrame:
     )
     user_ids = sorted(list(user_ids))
     df = pd.DataFrame(index=user_ids, columns=activity_types).fillna(0)
-    df.index.name = "student_id"
+    df.index.name = "user_id"
 
     # increment count for each time a user has interacted with a specific activity type
     for log in activity_logs:
@@ -193,7 +193,7 @@ def transform_data(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         The transformed data split into a feature and label dataframe.
     """
 
-    x_data = data.drop(["label", "student_id"], axis=1)
+    x_data = data.drop(["label", "user_id"], axis=1)
     y_data = data["label"]
     y_data = y_data.replace(
         {

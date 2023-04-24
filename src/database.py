@@ -36,7 +36,7 @@ def initialize_activity_table(engine: Engine):
         engine: The engine object to the database.
     """
 
-    query = "CREATE TABLE IF NOT EXISTS student_activities (student_id INTEGER PRIMARY KEY, Book INTEGER, Forum INTEGER, FAQ INTEGER, Quiz INTEGER, Glossary INTEGER, URL INTEGER, File INTEGER, Video INTEGER, Image INTEGER, Chat INTEGER, Workshop INTEGER, Page INTEGER, Assignment INTEGER, Folder INTEGER, Lesson INTEGER, Example INTEGER)"
+    query = "CREATE TABLE IF NOT EXISTS user_activities (user_id INTEGER PRIMARY KEY, Book INTEGER, Forum INTEGER, FAQ INTEGER, Quiz INTEGER, Glossary INTEGER, URL INTEGER, File INTEGER, Video INTEGER, Image INTEGER, Chat INTEGER, Workshop INTEGER, Page INTEGER, Assignment INTEGER, Folder INTEGER, Lesson INTEGER, Example INTEGER)"
 
     with engine.connect() as connection:
         connection.execute(text(query))
@@ -54,7 +54,7 @@ def insert_user_data(engine: Engine, df: pd.DataFrame):
         df: The dataframe to be inserted into the database.
     """
 
-    upsert(engine, df, "student_activities", if_row_exists="update")
+    upsert(engine, df, "user_activities", if_row_exists="update")
 
     user_ids = ", ".join([str(user_id) for user_id in df.index.values])
 
@@ -82,7 +82,7 @@ def fetch_complete_data(engine: Engine) -> list[tuple]:
         A list of tuples containing the complete data from the activity table.
     """
 
-    query = "SELECT * FROM student_activities"
+    query = "SELECT * FROM user_activities"
 
     try:
         with engine.connect() as connection:
@@ -109,7 +109,7 @@ def fetch_user_data(engine: Engine, user_id: int) -> tuple:
         A tuple containing the data of the user.
     """
 
-    query = "SELECT * FROM student_activities WHERE student_id=:user_id"
+    query = "SELECT * FROM user_activities WHERE user_id=:user_id"
 
     try:
         with engine.connect() as connection:
@@ -117,19 +117,11 @@ def fetch_user_data(engine: Engine, user_id: int) -> tuple:
             try:
                 rows = result.fetchall()
                 result = rows[0]
-                print(
-                    "db.fetch_user_data: Fetched data of user ID {}.".format(
-                        user_id
-                    )
-                )
+                print("db.fetch_user_data: Fetched data of user ID {}.".format(user_id))
                 return result
             except IndexError:
                 # print with function name
-                print(
-                    "db.fetch_user_data: User ID {} does not exist.".format(
-                        user_id
-                    )
-                )
+                print("db.fetch_user_data: User ID {} does not exist.".format(user_id))
                 return None
     except SQLAlchemyError as e:
         raise e
@@ -155,28 +147,25 @@ def update_user_data(engine: Engine, df: pd.DataFrame):
                     user_id
                 )
             )
-            user_data = data.df_row_to_new_df(df, user_id, "student_id")
+            user_data = data.df_row_to_new_df(df, user_id, "user_id")
             insert_user_data(engine, user_data)
             continue
 
         db_data = list(db_data)[1:]
         df_data = list(df.loc[user_id].values)
-        print("db_data", db_data)
-        print("df_Data", df_data)
 
         if db_data == df_data:
             print(
-                "db.update_user_data: No update required for user ID {}.".format(
+                "db.update_user_data: No update required for user ID {} as data is already up-to-date.".format(
                     user_id
                 )
             )
             continue
 
         diff = [df_data[i] - db_data[i] for i in range(len(db_data))]
-        print("diff", diff)
 
         df_new = pd.DataFrame()
-        df_new["student_id"] = [user_id]
+        df_new["user_id"] = [user_id]
         df_new["Book"] = [diff[0]]
         df_new["Forum"] = [diff[1]]
         df_new["FAQ"] = [diff[2]]
@@ -193,7 +182,7 @@ def update_user_data(engine: Engine, df: pd.DataFrame):
         df_new["Folder"] = [diff[13]]
         df_new["Lesson"] = [diff[14]]
         df_new["Example"] = [diff[15]]
-        df_new.set_index("student_id", inplace=True)
+        df_new.set_index("user_id", inplace=True)
 
         insert_user_data(engine, df_new)
         print("db.update_user_data: Updated user ID {}.".format(user_id))

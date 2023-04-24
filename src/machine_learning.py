@@ -36,6 +36,8 @@ def train_model(
         model: Trained model.
     """
 
+    print("ml.train_model: Training machine learning model...")
+
     model = NeuralNet()
 
     loss_fn = nn.CrossEntropyLoss()
