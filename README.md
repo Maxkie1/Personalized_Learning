@@ -8,11 +8,11 @@ The Personalized Learning project is about retrieving user activity logs from Mo
 
 # Usage
 
-The application can be run in two modes: [Local](#local) and [Docker](#docker). In the Local mode the application can be run from the command line. In the Docker mode the application can be run in a Docker container. Each mode offers a different set of features.
+The application can be run in two modes: [Local](#local-usage) and [Docker](#docker-usage). In the Local mode the application can be run from the command line. In the Docker mode the application can be run in a Docker container. Each mode offers a different set of features.
 
-## Local
+## Local Usage
 
-In the Local mode the application can be run from the command line. For instructions on how to install the application locally, see the [Installation](#installation) section. 
+In the Local mode the application can be run from the command line. For instructions on how to install the application locally, see the [Local Installation](#local-installation) section.
 
 The application can be run with the following arguments:   
 ```
@@ -49,25 +49,22 @@ Here are some examples of how to run the application from the command line:
     python main.py --mark 4
     ```
 
-## Docker
+## Docker Usage
 
-In the Docker mode the application exclusively runs with the `--poll` argument which is automatically executed when the Docker container is started. To run the application in the Docker mode, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/).
+In the Docker mode the application exclusively runs with the `--poll` argument which is automatically executed when the Docker container is started. For instructions on how to install the application in a Docker container, see the [Docker Installation](#docker-installation) section.
 
-To build the Docker image, run the following command:
-```
-docker build -t personalized_learning .
-```
-
-To run the Docker container, run the following command:
+To start the Docker container, run the following command:
 ```
 docker run personalized_learning
 ```
 
-
 # Installation
 
-To run the application locally, you need to have Python 3.10 installed on your machine. To install Python 3.10, follow the instructions on the [Python website](https://www.python.org/downloads/).
+This application can be installed in two ways: [Local](#local-installation) and [Docker](#docker-installation). The Local installation installs the application on your machine. The Docker installation installs the application in a Docker container.
 
+## Requirements
+
+The application is based on Python 3.10.
 The following Python libraries and their dependencies are required to run the application:
 
 - `pandas`
@@ -80,21 +77,40 @@ The following Python libraries and their dependencies are required to run the ap
 - `sdv`
 - `torch`
 
-To install these libraries globally, run the following command (**unrecommended**):
+## Local Installation
 
-```
-pip install -r requirements.txt
-```
+**Follow these instructions:**
 
-To install these libraries in a conda environment, run the following command (**recommended**):
+1. To run the application locally, you need to have Python 3.10 installed on your machine. To install Python 3.10, follow the instructions on the [Python website](https://www.python.org/downloads/).
 
-```
-conda create --name <thisproject>
-conda activate <thisproject>
-pip install -r requirements.txt
-```
+2. Place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the contents of the `.env` file.
 
-Additionally, place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the contents of the `.env` file.
+3. Install the required libraries.  
+To install the required libraries globally, run the following command (**unrecommended**):
+    ```
+    pip install -r requirements.txt
+    ```
+
+    To install the required libraries in a conda environment, run the following command (**recommended**):
+
+    ```
+    conda create --name <thisproject>
+    conda activate <thisproject>
+    pip install -r requirements.txt
+    ```
+
+## Docker Installation
+
+**Follow these instructions:**
+
+1. To run the application in a Docker container, you need to have Docker installed on your machine. To install Docker, follow the instructions on the [Docker website](https://docs.docker.com/get-docker/). 
+
+2. Place a `.env` file in the root directory of the project. Write a message to [Max Kiefer](https://github.com/Maxkie1) to get the contents of the `.env` file.
+
+3. To build the Docker image, run the following command:
+    ```
+    docker build -t personalized_learning .
+    ```
 
 # Contributors
 
