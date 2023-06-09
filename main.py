@@ -31,9 +31,6 @@ from src.utils import (
     mark_completed,
 )
 
-# TODO: add handling for polling and course completion status, maybe first flag
-
-
 def main(args):
     """Main function."""
 

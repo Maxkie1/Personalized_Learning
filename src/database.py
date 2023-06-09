@@ -137,6 +137,9 @@ def update_user_data(engine: Engine, df: pd.DataFrame):
         df: The dataframe containing the user data to be updated.
     """
 
+    print("db.update_user_data: Updating user data...")
+    print(df)
+          
     for user_id in df.index.values:
         print("db.update_user_data: Updating user ID {}...".format(user_id))
 
@@ -186,3 +189,4 @@ def update_user_data(engine: Engine, df: pd.DataFrame):
 
         insert_user_data(engine, df_new)
         print("db.update_user_data: Updated user ID {}.".format(user_id))
+        print(df_new)
